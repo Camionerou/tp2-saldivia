@@ -13,7 +13,7 @@ from datetime import date
 from pathlib import Path
 
 from fuentes import ErrorEntrada
-from pipeline import ErrorSalida, ErrorUmbral, guardar_salidas, procesar
+from pipeline import ErrorSalida, guardar_salidas, procesar
 
 RAIZ = Path(__file__).resolve().parents[1]
 
@@ -24,7 +24,7 @@ def fecha_de_corte(texto):
         return date.fromisoformat(texto)
     except ValueError:
         raise argparse.ArgumentTypeError(
-            f"'{texto}' no es una fecha válida con formato AAAA-MM-DD") from None
+            f"'{texto}' no es una fecha válida con formato AAAA-MM-DD")
 
 
 def leer_argumentos(argv):
@@ -66,15 +66,6 @@ def main(argv=None):
     try:
         resultado = procesar(argumentos.archivo, argumentos.corte)
         guardar_salidas(resultado, carpeta)
-    except ErrorUmbral as error:  # R34: se guarda el registro para diagnosticar
-        try:
-            carpeta.mkdir(parents=True, exist_ok=True)
-            error.registro.guardar(carpeta / "registro_limpieza.csv")
-            detalle = f" Revisá {carpeta}/registro_limpieza.csv."
-        except OSError:
-            detalle = ""
-        print(f"Error: {error}{detalle}", file=sys.stderr)
-        return 1
     except (ErrorEntrada, ErrorSalida) as error:
         print(f"Error: {error}", file=sys.stderr)
         return 1

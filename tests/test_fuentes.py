@@ -1,7 +1,7 @@
 """Lectura del archivo y del esquema: puntos R01 a R10e."""
 import unittest
 
-from ayuda import DATOS, TestConArchivos, renglon
+from ayuda import DATOS, ENCABEZADO, TestConArchivos, renglon
 
 from fuentes import ErrorEntrada, FuenteCSV, FuenteDatos, FuenteJSON, fuente_para
 
@@ -160,6 +160,14 @@ class TestEsquema(TestConArchivos):
         filas = fuente.cargar()
         self.assertEqual([f.numero_fila for f in filas], [1, 2])
         self.assertTrue(any("2 líneas vacías" in a for a in fuente.avisos))
+
+    def test_R10f_lineas_vacias_antes_del_encabezado(self):
+        ruta = self.escribir("arriba.csv", "\n;;;;;;;\n" + ENCABEZADO.replace(",", ";") + "\n"
+                             + FILA_OK.replace(",", ";") + "\n")
+        fuente = fuente_para(ruta)
+        filas = fuente.cargar()
+        self.assertEqual(filas[0].valores["proveedor"], "Proveedor 01")
+        self.assertTrue(any("';'" in a for a in fuente.avisos))
 
 
 if __name__ == "__main__":

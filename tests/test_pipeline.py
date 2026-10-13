@@ -6,7 +6,8 @@ from datetime import date
 
 from ayuda import DATOS, TestConArchivos, renglon
 
-from pipeline import ErrorSalida, ErrorUmbral, guardar_salidas, procesar
+from fuentes import ErrorEntrada
+from pipeline import ErrorSalida, guardar_salidas, procesar, verificar_umbral
 
 
 class TestCasoNormal(unittest.TestCase):
@@ -93,19 +94,27 @@ class TestAnalisis(TestConArchivos):
         self.assertEqual(resultado.ranking[0].dias_mas_vieja, 80)
 
     def test_R34_demasiadas_filas_rechazadas(self):
-        ruta = self.json([renglon(), renglon(cantidad=0), renglon(cantidad="dos")])
-        with self.assertRaises(ErrorUmbral) as contexto:
-            procesar(ruta)
-        self.assertIn("Se rechazaron 2 de 3 filas", str(contexto.exception))
-        self.assertEqual(contexto.exception.registro.contar("rechazada"), 2)
+        resultado = procesar(self.json([renglon(), renglon(cantidad=0), renglon(cantidad="dos")]))
+        with self.assertRaisesRegex(ErrorEntrada, "Se rechazaron 2 de 3 filas"):
+            verificar_umbral(resultado)
 
     def test_R34_justo_en_el_umbral_no_aborta(self):
-        resultado = procesar(self.json([renglon(), renglon(cantidad=0)]))
-        self.assertEqual(len(resultado.validas), 1)
+        verificar_umbral(procesar(self.json([renglon(), renglon(cantidad=0)])))
 
     def test_R34_corte_anterior_a_todo_el_extracto(self):
-        with self.assertRaisesRegex(ErrorUmbral, "fecha de corte"):
-            procesar(self.json([renglon()]), corte=date(2025, 1, 1))
+        resultado = procesar(self.json([renglon()]), corte=date(2025, 1, 1))
+        with self.assertRaisesRegex(ErrorEntrada, "fecha de corte"):
+            verificar_umbral(resultado)
+
+    def test_R34_guarda_el_registro_y_borra_el_ranking_viejo(self):
+        guardar_salidas(procesar(self.json([renglon()])), self.carpeta)
+        self.assertTrue((self.carpeta / "ranking.csv").exists())
+        malo = procesar(self.json([renglon(cantidad=0), renglon(cantidad=0), renglon()]))
+        with self.assertRaises(ErrorEntrada):
+            guardar_salidas(malo, self.carpeta)
+        self.assertFalse((self.carpeta / "ranking.csv").exists())
+        registro = (self.carpeta / "registro_limpieza.csv").read_text(encoding="utf-8-sig")
+        self.assertEqual(registro.count("rechazada"), 2)
 
     def test_R35_sin_devoluciones_abiertas(self):
         resultado = procesar(self.json([renglon(estado="cerrada")]))
@@ -148,7 +157,7 @@ class TestSalidas(TestConArchivos):
         destino.mkdir()
         destino.chmod(0o500)
         try:
-            with self.assertRaisesRegex(ErrorSalida, "No se pudo escribir .*ranking.csv"):
+            with self.assertRaisesRegex(ErrorSalida, "No se pudo escribir .*registro_limpieza.csv"):
                 guardar_salidas(self.resultado, destino)
         finally:
             destino.chmod(0o700)

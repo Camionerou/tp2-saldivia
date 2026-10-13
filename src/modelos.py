@@ -1,6 +1,6 @@
 """Clases del dominio: la devolución, el resumen por proveedor y el registro de limpieza."""
-import csv
-from dataclasses import dataclass, field
+from collections import Counter
+from dataclasses import dataclass
 from datetime import date
 
 ESTADOS = ("abierta", "cerrada")
@@ -12,7 +12,7 @@ class Devolucion:
 
     `motivo` vale "" si Calidad no lo escribió y `descuenta_stock` vale None si
     no se cargó: ninguno de los dos interviene en el ranking (R26, R27b).
-    `numero_fila` indica de dónde salió la fila y no forma parte de su identidad.
+    `numero_fila` indica de dónde salió la fila en el archivo.
     """
     remito: str
     fecha: date
@@ -21,16 +21,16 @@ class Devolucion:
     cantidad: int
     motivo: str
     estado: str
-    descuenta_stock: bool | None
-    numero_fila: int = field(default=0, compare=False)
+    descuenta_stock: bool   # o None si no se cargó
+    numero_fila: int = 0
 
     def __post_init__(self):
         # Última barrera: aunque alguien construya una Devolucion sin pasar por la
         # validación, no puede existir una con valores imposibles.
         if isinstance(self.cantidad, bool) or not isinstance(self.cantidad, int) or self.cantidad < 1:
-            raise ValueError(f"cantidad inválida: {self.cantidad!r}")
+            raise ValueError(f"cantidad inválida: {self.cantidad}")
         if self.estado not in ESTADOS:
-            raise ValueError(f"estado inválido: {self.estado!r}")
+            raise ValueError(f"estado inválido: {self.estado}")
         if not self.proveedor:
             raise ValueError("el proveedor no puede estar vacío")
 
@@ -56,14 +56,11 @@ class ResumenProveedor:
     proveedor: str
     renglones: int = 0
     unidades: int = 0
-    fecha_mas_vieja: date | None = None
+    fecha_mas_vieja: date = None
     dias_mas_vieja: int = 0
 
     def agregar(self, devolucion, corte):
-        if devolucion.proveedor != self.proveedor:
-            raise ValueError(f"{devolucion.proveedor!r} no es {self.proveedor!r}")
-        if not devolucion.esta_abierta():
-            raise ValueError("solo se resumen devoluciones abiertas")
+        """Suma una devolución abierta de este proveedor."""
         self.renglones += 1
         self.unidades += devolucion.cantidad
         if self.fecha_mas_vieja is None or devolucion.fecha < self.fecha_mas_vieja:
@@ -78,7 +75,7 @@ class ResumenProveedor:
 @dataclass(frozen=True)
 class Evento:
     """Una cosa que la limpieza le hizo (o notó) a una fila."""
-    numero_fila: int | None
+    numero_fila: int     # None en avisos que no son de una fila
     remito: str
     accion: str          # rechazada, corregida, duplicada o aviso
     campo: str
@@ -89,15 +86,13 @@ class Evento:
 class RegistroLimpieza:
     """Lleva la cuenta de todo lo que la limpieza rechazó, corrigió o advirtió."""
 
-    ACCIONES = ("rechazada", "corregida", "duplicada", "aviso")
     COLUMNAS = ("fila", "remito", "accion", "campo", "valor_original", "motivo")
 
     def __init__(self):
         self.eventos = []
 
     def anotar(self, numero_fila, remito, accion, campo, valor_original, motivo):
-        if accion not in self.ACCIONES:
-            raise ValueError(f"acción desconocida: {accion}")
+        """`accion` es rechazada, corregida, duplicada o aviso."""
         valor = "" if valor_original is None else str(valor_original)
         self.eventos.append(Evento(numero_fila, str(remito or ""), accion, campo, valor, motivo))
 
@@ -110,14 +105,10 @@ class RegistroLimpieza:
         return len(self.filas_con(accion))
 
     def motivo_mas_frecuente(self, accion):
-        motivos = [e.motivo for e in self.eventos if e.accion == accion]
-        return max(sorted(set(motivos)), key=motivos.count) if motivos else None
+        motivos = Counter(e.motivo for e in self.eventos if e.accion == accion)
+        return motivos.most_common(1)[0][0] if motivos else None
 
-    def guardar(self, ruta):
-        # R39: utf-8-sig para que Excel muestre bien los acentos.
-        with open(ruta, "w", encoding="utf-8-sig", newline="") as archivo:
-            escritor = csv.writer(archivo)
-            escritor.writerow(self.COLUMNAS)
-            for e in self.eventos:
-                fila = "" if e.numero_fila is None else e.numero_fila
-                escritor.writerow([fila, e.remito, e.accion, e.campo, e.valor_original, e.motivo])
+    def como_filas(self):
+        """Los eventos como filas para escribir en registro_limpieza.csv."""
+        return [["" if e.numero_fila is None else e.numero_fila, e.remito, e.accion,
+                 e.campo, e.valor_original, e.motivo] for e in self.eventos]
