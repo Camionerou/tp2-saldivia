@@ -1,0 +1,84 @@
+remito,fecha,proveedor,articulo,cantidad,motivo,estado,descuenta_stock
+0002-00001101,2026-01-05,Proveedor 04,Cerradura de compartimiento,11,no traba,abierta,no
+0002-00001102,2026-01-07,Proveedor 02,Cerradura de compartimiento,8,no traba,abierta,no
+0002-00001103,2026-01-09,Proveedor 01,Panel de aluminio,4,golpeado en el transporte,abierta,no
+0002-00001104,2026-01-12,Proveedor 01,Bisagra de tapa,8,medida fuera de tolerancia,cerrada,no
+0002-00001105,2026-01-16,Proveedor 02,Cerradura de compartimiento,16,no traba, Abierta ,no
+0002-00001106,2026-01-21,Proveedor 02,Burlete de ventanilla,10,material quebradizo,abierta,si
+0002-00001107,2026-01-24,Proveedor 05,Ventilador de habitáculo,2,,cerrada,no
+0002-00001108,2026-01-29,Proveedor 04,Panel de aluminio,1,golpeado en el transporte,cerrada,no
+0002-00001108,2026-01-29,Proveedor 04,Sensor de temperatura,7,lectura errática,cerrada,no
+0002-00001108,2026-01-29,Proveedor 04,Amortiguador de puerta,8,pierde aceite,CERRADA,si
+0002-00001109,2026-02-03,Proveedor 18,Fusible térmico,5,no corresponde al pedido,cerrada,no
+0002-00001110,2026-02-30,Proveedor 07,Bisagra de tapa,3,medida fuera de tolerancia,abierta,no
+0002-00001111,2026-02-10,Proveedor 06,Espejo retrovisor,3,llegó roto,abierta,no
+0002-00001112,2026-02-15,Proveedor 09,Cable de batería,11,sección incorrecta,abierta,no
+0002-00001113,19/02/2026,Proveedor 02,Ventilador de habitáculo,9,ruido excesivo,cerrada,no
+0002-00001114,2026-02-22,Proveedor 14,Cable de batería,9,sección incorrecta,abierta,no
+0002-00001115,2026-02-26,Proveedor 06,Cable de batería,19,sección incorrecta,abierta,no
+0002-00001116,2026-03-02,Proveedor 01,Burlete de ventanilla,7,material quebradizo,abierta,no
+0002-00001117,2026-03-04,Proveedor 01,Fusible térmico,15,no corresponde al pedido,cerrada,
+0002-00001118,2026-03-09,Proveedor 01,Bisagra de tapa,11,medida fuera de tolerancia,abierta,no
+0002-00001119,2026-03-11,Proveedor 04,Motor de limpiaparabrisas,13,no arranca,abierta,no
+0002-00001120,2026-03-13,Proveedor 16,Ventilador de habitáculo,18,ruido excesivo,abierta,no
+0002-00001121,2026-03-17,Proveedor 01 ,Panel de aluminio,2,golpeado en el transporte,abierta,no
+0002-00001122,2026-03-19,Proveedor 11,Espejo retrovisor,10,llegó roto,abierta,no
+0002-00001123,2026-03-22,Proveedor 08,Motor de limpiaparabrisas,4,no arranca,abierta,no
+0002-1127,2026-03-27,Proveedor 02,Burlete de ventanilla,6,material quebradizo,cerrada,no
+0002-00001125,2026-03-29,Proveedor 04,Cerradura de compartimiento,10,no traba,abierta,si
+0002-00001126,2026-04-02,Proveedor 01,Fusible térmico,6,,abierta,no
+0002-00001127,2026-04-07,Proveedor 12,Motor de limpiaparabrisas,3,no arranca,abierta,si
+0002-00001128,2026-04-09,Proveedor 16,Cable de batería,4,sección incorrecta,cerrada,no
+0002-00001129,2026-04-13,Proveedor 02,Ventilador de habitáculo,18,ruido excesivo,abierta,no
+0002-00001130,2026-04-18,Proveedor 02,Bisagra de tapa,dos,medida fuera de tolerancia,cerrada,no
+0002-00001131,2026-04-22,Proveedor 03,Burlete de ventanilla,10,material quebradizo,abierta,no
+0002-00001132,2026-04-26,Proveedor 01,Fusible térmico,14,no corresponde al pedido,cerrada,no
+0002-00001132,2026-04-26,Proveedor 01,Fusible térmico,14,no corresponde al pedido,cerrada,no
+0002-00001133,2026-05-01,Proveedor 02,Amortiguador de puerta,11,pierde aceite,abierta,no
+0002-00001134,2026-05-05,Proveedor 02,Bisagra de tapa,19,medida fuera de tolerancia,abierta,no
+0002-00001135,2026-05-10,Proveedor 04,Llave de luces,0,falso contacto,abierta,no
+0002-00001136,2026-05-15,Proveedor 01,Panel de aluminio,16,golpeado en el transporte,cerrada,no
+0002-00001137,2026-05-17,Proveedor 07,Espejo retrovisor,10,llegó roto,abierta,no
+0002-00001137,2026-05-17,Proveedor 07,Motor de limpiaparabrisas,9,no arranca,abierta,no
+0002-00001138,2026-05-22,Proveedor 03,Cable de batería,19,sección incorrecta,cerrada,no
+0002-00001139,2026-05-26,Proveedor 01,Cerradura de compartimiento,15,,abierta,no
+0002-00001140,2026-05-28,Proveedor 01,Llave de luces,17,falso contacto,abierta,si
+0002-00001141,2026-06-01,Proveedor 01,Espejo retrovisor,13,llegó roto,abierta,no
+0002-00001142,2026-06-03,Proveedor 17,Bisagra de tapa,1.000,medida fuera de tolerancia,abierta,no
+0002-00001143,2026-06-08,Proveedor 08,Panel de aluminio,19,golpeado en el transporte,abierta,no
+0002-00001144,2026-06-10,Proveedor 01,Llave de luces,3,falso contacto,abierta,no
+0002-00001145,2026-06-13,Proveedor 15,Llave de luces,14,falso contacto,anulada,no
+0002-00001146,2026-06-15,Proveedor 05,Cable de batería,7,sección incorrecta,abierta,no
+0002-00001147,2026-06-20,Proveedor 04,Espejo retrovisor,18,llegó roto,abierta,no
+0002-00001148,25/06/2026,Proveedor 09,Sensor de temperatura,6,lectura errática,abierta,si
+0002-00001149,2026-06-30,Proveedor 03,Sensor de temperatura,14,lectura errática,cerrada,no
+0002-00001150,2026-07-02,Proveedor 05,Burlete de ventanilla,14,material quebradizo,abierta,no
+0002-00001151,2026-07-07,Proveedor 01,Cable de batería,20,sección incorrecta,abierta,no
+0002-00001152,2026-07-11,Proveedor 03,Ventilador de habitáculo,20,ruido excesivo,abierta,no
+0002-00001153,2026-07-14,,Espejo retrovisor,6,llegó roto,abierta,si
+0002-00001154,2026-07-19,Proveedor 01,Amortiguador de puerta,12,pierde aceite,abierta,si
+0002-00001155,2026-07-21,Proveedor 12,Fusible térmico,6,no corresponde al pedido,abierta,no
+0002-00001156,2026-07-24,Proveedor 04,Bisagra de tapa,8,medida fuera de tolerancia,abierta,
+0002-00001157,2026-07-27,Proveedor 14,Sensor de temperatura,15,lectura errática,abierta,no
+0002-00001158,2026-08-01,Proveedor 16,Ventilador de habitáculo,3,ruido excesivo,abierta,no
+0002-00001159,2026-08-05,Proveedor 07,Cable de batería,6,sección incorrecta,abierta,si
+0002-00001160,2026-08-10,Proveedor 04,Espejo retrovisor,9,llegó roto,abierta,no
+0002-00001161,2026-08-15,Proveedor 13,Cable de batería,12,,abierta,si
+0002-00001162,2026-08-17,Proveedor 02,Burlete de ventanilla,16,material quebradizo,abierta,no
+0002-00001163,2026-08-20,Proveedor 02,Amortiguador de puerta,16,pierde aceite,abierta,no
+0002-00001164,2026-08-24,Proveedor 06,Llave de luces,13,falso contacto,abierta,si
+0002-00001165,2026-08-29,Proveedor 09,Ventilador de habitáculo,12,ruido excesivo,abierta,no
+0002-00001166,2026-08-31,Proveedor 02,Ventilador de habitáculo,18,ruido excesivo,abierta,no
+0002-00001167,2026-09-05,Proveedor 01,Amortiguador de puerta,9,pierde aceite,abierta,si
+0002-00001167,2026-09-05,Proveedor 01,Bisagra de tapa,6,medida fuera de tolerancia,abierta,no
+0002-00001167,2026-09-05,Proveedor 01,Cerradura de compartimiento,16,no traba,abierta,no
+0002-00001168,2026-09-09,Proveedor 06,Panel de aluminio,7,golpeado en el transporte,abierta,no
+0002-00001168,2026-09-09,Proveedor 06,Espejo retrovisor,12,llegó roto,abierta,no
+0002-00001168,2026-09-09,Proveedor 06,Bisagra de tapa,11,medida fuera de tolerancia,abierta,no
+0002-00001169,2026-09-13,Proveedor 09,Llave de luces,15,falso contacto,abierta,si
+0002-00001170,2026-09-18,Proveedor 02,Burlete de ventanilla,20,material quebradizo,abierta,no
+0002-00001171,2026-09-20,Proveedor 01,Cable de batería,17,sección incorrecta,abierta,no
+0002-00001172,2026-09-23,Proveedor 01,Bisagra de tapa,19,medida fuera de tolerancia,abierta,no
+0002-00001173,2026-09-26,Proveedor 18,Bisagra de tapa,8,medida fuera de tolerancia,abierta,no
+0002-00001103,2026-09-30,Proveedor 07,Fusible térmico,8,no corresponde al pedido,abierta,no
+0002-00001115,2026-09-30,Proveedor 01,Espejo retrovisor,2,llegó roto,abierta,no

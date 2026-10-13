@@ -1,0 +1,832 @@
+[
+  {
+    "remito": "0002-00001101",
+    "fecha": "2026-01-05",
+    "proveedor": "Proveedor 04",
+    "articulo": "Cerradura de compartimiento",
+    "cantidad": 11,
+    "motivo": "no traba",
+    "estado": "abierta",
+    "descuenta_stock": false
+  },
+  {
+    "remito": "0002-00001102",
+    "fecha": "2026-01-07",
+    "proveedor": "Proveedor 02",
+    "articulo": "Cerradura de compartimiento",
+    "cantidad": 8,
+    "motivo": "no traba",
+    "estado": "abierta",
+    "descuenta_stock": false
+  },
+  {
+    "remito": "0002-00001103",
+    "fecha": "2026-01-09",
+    "proveedor": "Proveedor 01",
+    "articulo": "Panel de aluminio",
+    "cantidad": 4,
+    "motivo": "golpeado en el transporte",
+    "estado": "abierta",
+    "descuenta_stock": false
+  },
+  {
+    "remito": "0002-00001104",
+    "fecha": "2026-01-12",
+    "proveedor": "Proveedor 01",
+    "articulo": "Bisagra de tapa",
+    "cantidad": 8,
+    "motivo": "medida fuera de tolerancia",
+    "estado": "cerrada",
+    "descuenta_stock": false
+  },
+  {
+    "remito": "0002-00001105",
+    "fecha": "2026-01-16",
+    "proveedor": "Proveedor 02",
+    "articulo": "Cerradura de compartimiento",
+    "cantidad": 16,
+    "motivo": "no traba",
+    "estado": " Abierta ",
+    "descuenta_stock": false
+  },
+  {
+    "remito": "0002-00001106",
+    "fecha": "2026-01-21",
+    "proveedor": "Proveedor 02",
+    "articulo": "Burlete de ventanilla",
+    "cantidad": 10,
+    "motivo": "material quebradizo",
+    "estado": "abierta",
+    "descuenta_stock": true
+  },
+  {
+    "remito": "0002-00001107",
+    "fecha": "2026-01-24",
+    "proveedor": "Proveedor 05",
+    "articulo": "Ventilador de habitáculo",
+    "cantidad": 2,
+    "motivo": "",
+    "estado": "cerrada",
+    "descuenta_stock": false
+  },
+  {
+    "remito": "0002-00001108",
+    "fecha": "2026-01-29",
+    "proveedor": "Proveedor 04",
+    "articulo": "Panel de aluminio",
+    "cantidad": 1,
+    "motivo": "golpeado en el transporte",
+    "estado": "cerrada",
+    "descuenta_stock": false
+  },
+  {
+    "remito": "0002-00001108",
+    "fecha": "2026-01-29",
+    "proveedor": "Proveedor 04",
+    "articulo": "Sensor de temperatura",
+    "cantidad": 7,
+    "motivo": "lectura errática",
+    "estado": "cerrada",
+    "descuenta_stock": false
+  },
+  {
+    "remito": "0002-00001108",
+    "fecha": "2026-01-29",
+    "proveedor": "Proveedor 04",
+    "articulo": "Amortiguador de puerta",
+    "cantidad": 8,
+    "motivo": "pierde aceite",
+    "estado": "CERRADA",
+    "descuenta_stock": true
+  },
+  {
+    "remito": "0002-00001109",
+    "fecha": "2026-02-03",
+    "proveedor": "Proveedor 18",
+    "articulo": "Fusible térmico",
+    "cantidad": 5,
+    "motivo": "no corresponde al pedido",
+    "estado": "cerrada",
+    "descuenta_stock": false
+  },
+  {
+    "remito": "0002-00001110",
+    "fecha": "2026-02-30",
+    "proveedor": "Proveedor 07",
+    "articulo": "Bisagra de tapa",
+    "cantidad": 3,
+    "motivo": "medida fuera de tolerancia",
+    "estado": "abierta",
+    "descuenta_stock": false
+  },
+  {
+    "remito": "0002-00001111",
+    "fecha": "2026-02-10",
+    "proveedor": "Proveedor 06",
+    "articulo": "Espejo retrovisor",
+    "cantidad": 3,
+    "motivo": "llegó roto",
+    "estado": "abierta",
+    "descuenta_stock": false
+  },
+  {
+    "remito": "0002-00001112",
+    "fecha": "2026-02-15",
+    "proveedor": "Proveedor 09",
+    "articulo": "Cable de batería",
+    "cantidad": 11,
+    "motivo": "sección incorrecta",
+    "estado": "abierta",
+    "descuenta_stock": false
+  },
+  {
+    "remito": "0002-00001113",
+    "fecha": "19/02/2026",
+    "proveedor": "Proveedor 02",
+    "articulo": "Ventilador de habitáculo",
+    "cantidad": 9,
+    "motivo": "ruido excesivo",
+    "estado": "cerrada",
+    "descuenta_stock": false
+  },
+  {
+    "remito": "0002-00001114",
+    "fecha": "2026-02-22",
+    "proveedor": "Proveedor 14",
+    "articulo": "Cable de batería",
+    "cantidad": 9,
+    "motivo": "sección incorrecta",
+    "estado": "abierta",
+    "descuenta_stock": false
+  },
+  {
+    "remito": "0002-00001115",
+    "fecha": "2026-02-26",
+    "proveedor": "Proveedor 06",
+    "articulo": "Cable de batería",
+    "cantidad": 19,
+    "motivo": "sección incorrecta",
+    "estado": "abierta",
+    "descuenta_stock": false
+  },
+  {
+    "remito": "0002-00001116",
+    "fecha": "2026-03-02",
+    "proveedor": "Proveedor 01",
+    "articulo": "Burlete de ventanilla",
+    "cantidad": 7,
+    "motivo": "material quebradizo",
+    "estado": "abierta",
+    "descuenta_stock": false
+  },
+  {
+    "remito": "0002-00001117",
+    "fecha": "2026-03-04",
+    "proveedor": "Proveedor 01",
+    "articulo": "Fusible térmico",
+    "cantidad": 15,
+    "motivo": "no corresponde al pedido",
+    "estado": "cerrada",
+    "descuenta_stock": null
+  },
+  {
+    "remito": "0002-00001118",
+    "fecha": "2026-03-09",
+    "proveedor": "Proveedor 01",
+    "articulo": "Bisagra de tapa",
+    "cantidad": 11,
+    "motivo": "medida fuera de tolerancia",
+    "estado": "abierta",
+    "descuenta_stock": false
+  },
+  {
+    "remito": "0002-00001119",
+    "fecha": "2026-03-11",
+    "proveedor": "Proveedor 04",
+    "articulo": "Motor de limpiaparabrisas",
+    "cantidad": 13,
+    "motivo": "no arranca",
+    "estado": "abierta",
+    "descuenta_stock": false
+  },
+  {
+    "remito": "0002-00001120",
+    "fecha": "2026-03-13",
+    "proveedor": "Proveedor 16",
+    "articulo": "Ventilador de habitáculo",
+    "cantidad": 18,
+    "motivo": "ruido excesivo",
+    "estado": "abierta",
+    "descuenta_stock": false
+  },
+  {
+    "remito": "0002-00001121",
+    "fecha": "2026-03-17",
+    "proveedor": "Proveedor 01 ",
+    "articulo": "Panel de aluminio",
+    "cantidad": 2,
+    "motivo": "golpeado en el transporte",
+    "estado": "abierta",
+    "descuenta_stock": false
+  },
+  {
+    "remito": "0002-00001122",
+    "fecha": "2026-03-19",
+    "proveedor": "Proveedor 11",
+    "articulo": "Espejo retrovisor",
+    "cantidad": 10,
+    "motivo": "llegó roto",
+    "estado": "abierta",
+    "descuenta_stock": false
+  },
+  {
+    "remito": "0002-00001123",
+    "fecha": "2026-03-22",
+    "proveedor": "Proveedor 08",
+    "articulo": "Motor de limpiaparabrisas",
+    "cantidad": 4,
+    "motivo": "no arranca",
+    "estado": "abierta",
+    "descuenta_stock": false
+  },
+  {
+    "remito": "0002-1127",
+    "fecha": "2026-03-27",
+    "proveedor": "Proveedor 02",
+    "articulo": "Burlete de ventanilla",
+    "cantidad": 6,
+    "motivo": "material quebradizo",
+    "estado": "cerrada",
+    "descuenta_stock": false
+  },
+  {
+    "remito": "0002-00001125",
+    "fecha": "2026-03-29",
+    "proveedor": "Proveedor 04",
+    "articulo": "Cerradura de compartimiento",
+    "cantidad": 10,
+    "motivo": "no traba",
+    "estado": "abierta",
+    "descuenta_stock": true
+  },
+  {
+    "remito": "0002-00001126",
+    "fecha": "2026-04-02",
+    "proveedor": "Proveedor 01",
+    "articulo": "Fusible térmico",
+    "cantidad": 6,
+    "motivo": "",
+    "estado": "abierta",
+    "descuenta_stock": false
+  },
+  {
+    "remito": "0002-00001127",
+    "fecha": "2026-04-07",
+    "proveedor": "Proveedor 12",
+    "articulo": "Motor de limpiaparabrisas",
+    "cantidad": 3,
+    "motivo": "no arranca",
+    "estado": "abierta",
+    "descuenta_stock": true
+  },
+  {
+    "remito": "0002-00001128",
+    "fecha": "2026-04-09",
+    "proveedor": "Proveedor 16",
+    "articulo": "Cable de batería",
+    "cantidad": 4,
+    "motivo": "sección incorrecta",
+    "estado": "cerrada",
+    "descuenta_stock": false
+  },
+  {
+    "remito": "0002-00001129",
+    "fecha": "2026-04-13",
+    "proveedor": "Proveedor 02",
+    "articulo": "Ventilador de habitáculo",
+    "cantidad": 18,
+    "motivo": "ruido excesivo",
+    "estado": "abierta",
+    "descuenta_stock": false
+  },
+  {
+    "remito": "0002-00001130",
+    "fecha": "2026-04-18",
+    "proveedor": "Proveedor 02",
+    "articulo": "Bisagra de tapa",
+    "cantidad": "dos",
+    "motivo": "medida fuera de tolerancia",
+    "estado": "cerrada",
+    "descuenta_stock": false
+  },
+  {
+    "remito": "0002-00001131",
+    "fecha": "2026-04-22",
+    "proveedor": "Proveedor 03",
+    "articulo": "Burlete de ventanilla",
+    "cantidad": 10,
+    "motivo": "material quebradizo",
+    "estado": "abierta",
+    "descuenta_stock": false
+  },
+  {
+    "remito": "0002-00001132",
+    "fecha": "2026-04-26",
+    "proveedor": "Proveedor 01",
+    "articulo": "Fusible térmico",
+    "cantidad": 14,
+    "motivo": "no corresponde al pedido",
+    "estado": "cerrada",
+    "descuenta_stock": false
+  },
+  {
+    "remito": "0002-00001132",
+    "fecha": "2026-04-26",
+    "proveedor": "Proveedor 01",
+    "articulo": "Fusible térmico",
+    "cantidad": 14,
+    "motivo": "no corresponde al pedido",
+    "estado": "cerrada",
+    "descuenta_stock": false
+  },
+  {
+    "remito": "0002-00001133",
+    "fecha": "2026-05-01",
+    "proveedor": "Proveedor 02",
+    "articulo": "Amortiguador de puerta",
+    "cantidad": 11,
+    "motivo": "pierde aceite",
+    "estado": "abierta",
+    "descuenta_stock": false
+  },
+  {
+    "remito": "0002-00001134",
+    "fecha": "2026-05-05",
+    "proveedor": "Proveedor 02",
+    "articulo": "Bisagra de tapa",
+    "cantidad": 19,
+    "motivo": "medida fuera de tolerancia",
+    "estado": "abierta",
+    "descuenta_stock": false
+  },
+  {
+    "remito": "0002-00001135",
+    "fecha": "2026-05-10",
+    "proveedor": "Proveedor 04",
+    "articulo": "Llave de luces",
+    "cantidad": 0,
+    "motivo": "falso contacto",
+    "estado": "abierta",
+    "descuenta_stock": false
+  },
+  {
+    "remito": "0002-00001136",
+    "fecha": "2026-05-15",
+    "proveedor": "Proveedor 01",
+    "articulo": "Panel de aluminio",
+    "cantidad": 16,
+    "motivo": "golpeado en el transporte",
+    "estado": "cerrada",
+    "descuenta_stock": false
+  },
+  {
+    "remito": "0002-00001137",
+    "fecha": "2026-05-17",
+    "proveedor": "Proveedor 07",
+    "articulo": "Espejo retrovisor",
+    "cantidad": 10,
+    "motivo": "llegó roto",
+    "estado": "abierta",
+    "descuenta_stock": false
+  },
+  {
+    "remito": "0002-00001137",
+    "fecha": "2026-05-17",
+    "proveedor": "Proveedor 07",
+    "articulo": "Motor de limpiaparabrisas",
+    "cantidad": 9,
+    "motivo": "no arranca",
+    "estado": "abierta",
+    "descuenta_stock": false
+  },
+  {
+    "remito": "0002-00001138",
+    "fecha": "2026-05-22",
+    "proveedor": "Proveedor 03",
+    "articulo": "Cable de batería",
+    "cantidad": 19,
+    "motivo": "sección incorrecta",
+    "estado": "cerrada",
+    "descuenta_stock": false
+  },
+  {
+    "remito": "0002-00001139",
+    "fecha": "2026-05-26",
+    "proveedor": "Proveedor 01",
+    "articulo": "Cerradura de compartimiento",
+    "cantidad": 15,
+    "motivo": "",
+    "estado": "abierta",
+    "descuenta_stock": false
+  },
+  {
+    "remito": "0002-00001140",
+    "fecha": "2026-05-28",
+    "proveedor": "Proveedor 01",
+    "articulo": "Llave de luces",
+    "cantidad": 17,
+    "motivo": "falso contacto",
+    "estado": "abierta",
+    "descuenta_stock": true
+  },
+  {
+    "remito": "0002-00001141",
+    "fecha": "2026-06-01",
+    "proveedor": "Proveedor 01",
+    "articulo": "Espejo retrovisor",
+    "cantidad": 13,
+    "motivo": "llegó roto",
+    "estado": "abierta",
+    "descuenta_stock": false
+  },
+  {
+    "remito": "0002-00001142",
+    "fecha": "2026-06-03",
+    "proveedor": "Proveedor 17",
+    "articulo": "Bisagra de tapa",
+    "cantidad": "1.000",
+    "motivo": "medida fuera de tolerancia",
+    "estado": "abierta",
+    "descuenta_stock": false
+  },
+  {
+    "remito": "0002-00001143",
+    "fecha": "2026-06-08",
+    "proveedor": "Proveedor 08",
+    "articulo": "Panel de aluminio",
+    "cantidad": 19,
+    "motivo": "golpeado en el transporte",
+    "estado": "abierta",
+    "descuenta_stock": false
+  },
+  {
+    "remito": "0002-00001144",
+    "fecha": "2026-06-10",
+    "proveedor": "Proveedor 01",
+    "articulo": "Llave de luces",
+    "cantidad": 3,
+    "motivo": "falso contacto",
+    "estado": "abierta",
+    "descuenta_stock": false
+  },
+  {
+    "remito": "0002-00001145",
+    "fecha": "2026-06-13",
+    "proveedor": "Proveedor 15",
+    "articulo": "Llave de luces",
+    "cantidad": 14,
+    "motivo": "falso contacto",
+    "estado": "anulada",
+    "descuenta_stock": false
+  },
+  {
+    "remito": "0002-00001146",
+    "fecha": "2026-06-15",
+    "proveedor": "Proveedor 05",
+    "articulo": "Cable de batería",
+    "cantidad": 7,
+    "motivo": "sección incorrecta",
+    "estado": "abierta",
+    "descuenta_stock": false
+  },
+  {
+    "remito": "0002-00001147",
+    "fecha": "2026-06-20",
+    "proveedor": "Proveedor 04",
+    "articulo": "Espejo retrovisor",
+    "cantidad": 18,
+    "motivo": "llegó roto",
+    "estado": "abierta",
+    "descuenta_stock": false
+  },
+  {
+    "remito": "0002-00001148",
+    "fecha": "25/06/2026",
+    "proveedor": "Proveedor 09",
+    "articulo": "Sensor de temperatura",
+    "cantidad": 6,
+    "motivo": "lectura errática",
+    "estado": "abierta",
+    "descuenta_stock": true
+  },
+  {
+    "remito": "0002-00001149",
+    "fecha": "2026-06-30",
+    "proveedor": "Proveedor 03",
+    "articulo": "Sensor de temperatura",
+    "cantidad": 14,
+    "motivo": "lectura errática",
+    "estado": "cerrada",
+    "descuenta_stock": false
+  },
+  {
+    "remito": "0002-00001150",
+    "fecha": "2026-07-02",
+    "proveedor": "Proveedor 05",
+    "articulo": "Burlete de ventanilla",
+    "cantidad": 14,
+    "motivo": "material quebradizo",
+    "estado": "abierta",
+    "descuenta_stock": false
+  },
+  {
+    "remito": "0002-00001151",
+    "fecha": "2026-07-07",
+    "proveedor": "Proveedor 01",
+    "articulo": "Cable de batería",
+    "cantidad": 20,
+    "motivo": "sección incorrecta",
+    "estado": "abierta",
+    "descuenta_stock": false
+  },
+  {
+    "remito": "0002-00001152",
+    "fecha": "2026-07-11",
+    "proveedor": "Proveedor 03",
+    "articulo": "Ventilador de habitáculo",
+    "cantidad": 20,
+    "motivo": "ruido excesivo",
+    "estado": "abierta",
+    "descuenta_stock": false
+  },
+  {
+    "remito": "0002-00001153",
+    "fecha": "2026-07-14",
+    "proveedor": "",
+    "articulo": "Espejo retrovisor",
+    "cantidad": 6,
+    "motivo": "llegó roto",
+    "estado": "abierta",
+    "descuenta_stock": true
+  },
+  {
+    "remito": "0002-00001154",
+    "fecha": "2026-07-19",
+    "proveedor": "Proveedor 01",
+    "articulo": "Amortiguador de puerta",
+    "cantidad": 12,
+    "motivo": "pierde aceite",
+    "estado": "abierta",
+    "descuenta_stock": true
+  },
+  {
+    "remito": "0002-00001155",
+    "fecha": "2026-07-21",
+    "proveedor": "Proveedor 12",
+    "articulo": "Fusible térmico",
+    "cantidad": 6,
+    "motivo": "no corresponde al pedido",
+    "estado": "abierta",
+    "descuenta_stock": false
+  },
+  {
+    "remito": "0002-00001156",
+    "fecha": "2026-07-24",
+    "proveedor": "Proveedor 04",
+    "articulo": "Bisagra de tapa",
+    "cantidad": 8,
+    "motivo": "medida fuera de tolerancia",
+    "estado": "abierta",
+    "descuenta_stock": null
+  },
+  {
+    "remito": "0002-00001157",
+    "fecha": "2026-07-27",
+    "proveedor": "Proveedor 14",
+    "articulo": "Sensor de temperatura",
+    "cantidad": 15,
+    "motivo": "lectura errática",
+    "estado": "abierta",
+    "descuenta_stock": false
+  },
+  {
+    "remito": "0002-00001158",
+    "fecha": "2026-08-01",
+    "proveedor": "Proveedor 16",
+    "articulo": "Ventilador de habitáculo",
+    "cantidad": 3,
+    "motivo": "ruido excesivo",
+    "estado": "abierta",
+    "descuenta_stock": false
+  },
+  {
+    "remito": "0002-00001159",
+    "fecha": "2026-08-05",
+    "proveedor": "Proveedor 07",
+    "articulo": "Cable de batería",
+    "cantidad": 6,
+    "motivo": "sección incorrecta",
+    "estado": "abierta",
+    "descuenta_stock": true
+  },
+  {
+    "remito": "0002-00001160",
+    "fecha": "2026-08-10",
+    "proveedor": "Proveedor 04",
+    "articulo": "Espejo retrovisor",
+    "cantidad": 9,
+    "motivo": "llegó roto",
+    "estado": "abierta",
+    "descuenta_stock": false
+  },
+  {
+    "remito": "0002-00001161",
+    "fecha": "2026-08-15",
+    "proveedor": "Proveedor 13",
+    "articulo": "Cable de batería",
+    "cantidad": 12,
+    "motivo": "",
+    "estado": "abierta",
+    "descuenta_stock": true
+  },
+  {
+    "remito": "0002-00001162",
+    "fecha": "2026-08-17",
+    "proveedor": "Proveedor 02",
+    "articulo": "Burlete de ventanilla",
+    "cantidad": 16,
+    "motivo": "material quebradizo",
+    "estado": "abierta",
+    "descuenta_stock": false
+  },
+  {
+    "remito": "0002-00001163",
+    "fecha": "2026-08-20",
+    "proveedor": "Proveedor 02",
+    "articulo": "Amortiguador de puerta",
+    "cantidad": 16,
+    "motivo": "pierde aceite",
+    "estado": "abierta",
+    "descuenta_stock": false
+  },
+  {
+    "remito": "0002-00001164",
+    "fecha": "2026-08-24",
+    "proveedor": "Proveedor 06",
+    "articulo": "Llave de luces",
+    "cantidad": 13,
+    "motivo": "falso contacto",
+    "estado": "abierta",
+    "descuenta_stock": true
+  },
+  {
+    "remito": "0002-00001165",
+    "fecha": "2026-08-29",
+    "proveedor": "Proveedor 09",
+    "articulo": "Ventilador de habitáculo",
+    "cantidad": 12,
+    "motivo": "ruido excesivo",
+    "estado": "abierta",
+    "descuenta_stock": false
+  },
+  {
+    "remito": "0002-00001166",
+    "fecha": "2026-08-31",
+    "proveedor": "Proveedor 02",
+    "articulo": "Ventilador de habitáculo",
+    "cantidad": 18,
+    "motivo": "ruido excesivo",
+    "estado": "abierta",
+    "descuenta_stock": false
+  },
+  {
+    "remito": "0002-00001167",
+    "fecha": "2026-09-05",
+    "proveedor": "Proveedor 01",
+    "articulo": "Amortiguador de puerta",
+    "cantidad": 9,
+    "motivo": "pierde aceite",
+    "estado": "abierta",
+    "descuenta_stock": true
+  },
+  {
+    "remito": "0002-00001167",
+    "fecha": "2026-09-05",
+    "proveedor": "Proveedor 01",
+    "articulo": "Bisagra de tapa",
+    "cantidad": 6,
+    "motivo": "medida fuera de tolerancia",
+    "estado": "abierta",
+    "descuenta_stock": false
+  },
+  {
+    "remito": "0002-00001167",
+    "fecha": "2026-09-05",
+    "proveedor": "Proveedor 01",
+    "articulo": "Cerradura de compartimiento",
+    "cantidad": 16,
+    "motivo": "no traba",
+    "estado": "abierta",
+    "descuenta_stock": false
+  },
+  {
+    "remito": "0002-00001168",
+    "fecha": "2026-09-09",
+    "proveedor": "Proveedor 06",
+    "articulo": "Panel de aluminio",
+    "cantidad": 7,
+    "motivo": "golpeado en el transporte",
+    "estado": "abierta",
+    "descuenta_stock": false
+  },
+  {
+    "remito": "0002-00001168",
+    "fecha": "2026-09-09",
+    "proveedor": "Proveedor 06",
+    "articulo": "Espejo retrovisor",
+    "cantidad": 12,
+    "motivo": "llegó roto",
+    "estado": "abierta",
+    "descuenta_stock": false
+  },
+  {
+    "remito": "0002-00001168",
+    "fecha": "2026-09-09",
+    "proveedor": "Proveedor 06",
+    "articulo": "Bisagra de tapa",
+    "cantidad": 11,
+    "motivo": "medida fuera de tolerancia",
+    "estado": "abierta",
+    "descuenta_stock": false
+  },
+  {
+    "remito": "0002-00001169",
+    "fecha": "2026-09-13",
+    "proveedor": "Proveedor 09",
+    "articulo": "Llave de luces",
+    "cantidad": 15,
+    "motivo": "falso contacto",
+    "estado": "abierta",
+    "descuenta_stock": true
+  },
+  {
+    "remito": "0002-00001170",
+    "fecha": "2026-09-18",
+    "proveedor": "Proveedor 02",
+    "articulo": "Burlete de ventanilla",
+    "cantidad": 20,
+    "motivo": "material quebradizo",
+    "estado": "abierta",
+    "descuenta_stock": false
+  },
+  {
+    "remito": "0002-00001171",
+    "fecha": "2026-09-20",
+    "proveedor": "Proveedor 01",
+    "articulo": "Cable de batería",
+    "cantidad": 17,
+    "motivo": "sección incorrecta",
+    "estado": "abierta",
+    "descuenta_stock": false
+  },
+  {
+    "remito": "0002-00001172",
+    "fecha": "2026-09-23",
+    "proveedor": "Proveedor 01",
+    "articulo": "Bisagra de tapa",
+    "cantidad": 19,
+    "motivo": "medida fuera de tolerancia",
+    "estado": "abierta",
+    "descuenta_stock": false
+  },
+  {
+    "remito": "0002-00001173",
+    "fecha": "2026-09-26",
+    "proveedor": "Proveedor 18",
+    "articulo": "Bisagra de tapa",
+    "cantidad": 8,
+    "motivo": "medida fuera de tolerancia",
+    "estado": "abierta",
+    "descuenta_stock": false
+  },
+  {
+    "remito": "0002-00001103",
+    "fecha": "2026-09-30",
+    "proveedor": "Proveedor 07",
+    "articulo": "Fusible térmico",
+    "cantidad": 8,
+    "motivo": "no corresponde al pedido",
+    "estado": "abierta",
+    "descuenta_stock": false
+  },
+  {
+    "remito": "0002-00001115",
+    "fecha": "2026-09-30",
+    "proveedor": "Proveedor 01",
+    "articulo": "Espejo retrovisor",
+    "cantidad": 2,
+    "motivo": "llegó roto",
+    "estado": "abierta",
+    "descuenta_stock": false
+  }
+]

@@ -1,14 +1,16 @@
-# Entornos y caches
+# Entornos virtuales y cachés de Python
 .venv/
+venv/
 __pycache__/
 *.py[cod]
 
-# Jupyter
-.ipynb_checkpoints/
-
-# Archivos locales
-.env
+# Archivos del sistema y del editor
 .DS_Store
+.vscode/
+.idea/
 
-# Salidas generadas por el programa (se recrean al ejecutarlo)
+# Secretos
+.env
+
+# Salidas: se regeneran ejecutando la aplicación
 outputs/
