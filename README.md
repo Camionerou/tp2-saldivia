@@ -1,25 +1,46 @@
-# Mi primer repositorio
+# Seguimiento de devoluciones a proveedores
 
-Tutorial de GitHub Desktop y VS Code.
-Calcula el total de tres ventas ficticias.
+Trabajo Práctico 2 – Programación Orientada a Datos (UCA, 2026).
+Autor: Enzo Saldivia.
 
-## Requisitos
-Python 3. Sin dependencias externas.
+## Problema
 
-## Estructura
-src/: codigo del programa.
-data/: datos ficticios y su descripcion.
-tests/: verificaciones manuales.
+En una fábrica, cuando el material recibido de un proveedor no sirve (no funciona,
+llega roto o no corresponde a lo pedido), Calidad lo devuelve con un remito de
+devolución. Esas devoluciones quedan abiertas hasta que el proveedor repone el
+material o emite una nota de crédito.
 
-## Ejecucion
-En VS Code, abrir src/main.py y usar Run Python File.
-Desde la carpeta raiz, tambien se puede ejecutar:
-python src/main.py
-En macOS, usar python3 si el interprete tiene ese nombre.
+Hoy nadie las sigue: la mayoría queda abierta durante meses, la numeración de los
+remitos de devolución se repite y no hay forma rápida de saber a qué proveedor hay
+que reclamarle.
+
+## Usuario
+
+Compras y Administración. Compras necesita saber a qué proveedor reclamarle;
+Administración, a qué proveedor convendría frenarle un pago mientras tenga
+devoluciones pendientes.
+
+## Pregunta
+
+**¿Qué proveedores tienen más devoluciones abiertas y hace cuántos días que esperan?**
 
 ## Resultado esperado
-Total de ventas: 5500
 
+Un ranking de proveedores con devoluciones abiertas: cantidad de renglones abiertos,
+unidades devueltas y antigüedad de la devolución más vieja a una fecha de corte. Se
+muestra en pantalla y se guarda en `outputs/`, junto con un registro de las filas
+rechazadas o corregidas durante la limpieza.
 
+## Alcance de la primera versión
 
-Ejemplo utilizado en la clase de POD
+Incluye: lectura de un extracto de devoluciones en CSV o JSON, validación, limpieza,
+ranking por proveedor y pruebas.
+
+Queda fuera: conexión con el sistema real de la empresa, notas de crédito, pagos,
+alertas automáticas e interfaz gráfica.
+
+## Datos
+
+Los datos son **simulados**: reproducen la estructura y los problemas de un extracto
+real (numeración repetida, motivos vacíos, pocas devoluciones cerradas) sin incluir
+nombres de proveedores ni de personas. Ver `data/README.md`.
