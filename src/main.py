@@ -55,6 +55,8 @@ def mostrar(resultado, carpeta):
         for posicion, r in enumerate(resultado.ranking, start=1):
             print(f"{posicion:>3}  {r.proveedor:<22}{r.renglones:>10}{r.unidades:>10}"
                   f"{r.fecha_mas_vieja.isoformat():>13}{r.dias_mas_vieja:>7}")
+    if carpeta.is_relative_to(Path.cwd()):
+        carpeta = carpeta.relative_to(Path.cwd())
     print(f"\nResultados guardados en {carpeta}/ranking.csv y {carpeta}/registro_limpieza.csv")
 
 
