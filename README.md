@@ -18,4 +18,4 @@ python src/main.py
 En macOS, usar python3 si el interprete tiene ese nombre.
 
 ## Resultado esperado
-Total de ventas: 4500
+Total de ventas: 5500
