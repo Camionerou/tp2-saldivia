@@ -1,4 +1,8 @@
-"""Validación de cada campo: puntos R11 a R28."""
+"""Validación de cada campo: puntos R11 a R28.
+
+Los casos están en tablas: cada fila es un caso, con el punto de ruptura que
+cubre. Para agregar un caso basta con agregar una fila.
+"""
 import unittest
 from datetime import date
 
@@ -8,7 +12,70 @@ from fuentes import FilaCruda
 from modelos import Devolucion, RegistroLimpieza
 from validacion import (ValorInvalido, limpiar_cantidad, limpiar_descuenta_stock,
                         limpiar_estado, limpiar_fecha, limpiar_proveedor,
-                        limpiar_remito, limpiar_texto, validar_fila)
+                        limpiar_remito, validar_fila)
+
+# Valores que hacen rechazar la fila: (punto, función, valor, parte del mensaje).
+RECHAZOS = [
+    ("R11", limpiar_remito, "0002-1127", "formato 0000-00000000"),
+    ("R11", limpiar_remito, "A002-00001127", "formato 0000-00000000"),
+    ("R11", limpiar_remito, "0002-000011270", "formato 0000-00000000"),
+    ("R11", limpiar_remito, "0002-00001127\n0002", "formato 0000-00000000"),
+    ("R12", limpiar_remito, "   ", "vacío"),
+    ("R13", limpiar_fecha, "15-09-2026", "formato"),
+    ("R13", limpiar_fecha, "2026/09/15", "formato"),
+    ("R13", limpiar_fecha, "2026-9-15", "formato"),
+    ("R13", limpiar_fecha, 20260915, "formato"),
+    ("R14", limpiar_fecha, "2026-02-30", "no existe en el calendario"),
+    ("R14", limpiar_fecha, "31/04/2026", "no existe en el calendario"),
+    ("R14", limpiar_fecha, "2026-13-01", "no existe en el calendario"),
+    ("R14", limpiar_fecha, "2025-02-29", "no existe en el calendario"),  # no bisiesto
+    ("R16", limpiar_cantidad, "dos", "no es un número"),
+    ("R16", limpiar_cantidad, "", "no es un número"),
+    ("R16", limpiar_cantidad, "1e3", "no es un número"),
+    ("R17", limpiar_cantidad, 0, "al menos 1"),
+    ("R17", limpiar_cantidad, "-3", "al menos 1"),
+    ("R18", limpiar_cantidad, 2.5, "decimales"),
+    ("R18", limpiar_cantidad, "2,5", "decimales"),
+    ("R19", limpiar_cantidad, "1.000", "ambigua"),
+    ("R19", limpiar_cantidad, "12.500", "ambigua"),
+    ("R20", limpiar_cantidad, True, "verdadero/falso"),  # isinstance(True, int) es True
+    ("R20", limpiar_cantidad, False, "verdadero/falso"),
+    ("R22", limpiar_estado, "anulada", "no es 'abierta' ni 'cerrada'"),
+    ("R22", limpiar_estado, "", "no es 'abierta' ni 'cerrada'"),
+    ("R23", limpiar_proveedor, "   ", "proveedor está vacío"),
+    ("R28", limpiar_remito, None, "vacío"),
+    ("R28", limpiar_cantidad, None, "no es un número"),
+    ("R28", limpiar_proveedor, None, "proveedor está vacío"),
+]
+
+# Valores que se aceptan: (punto, función, valor, valor limpio, ¿se anota corrección?).
+ACEPTADOS = [
+    ("R11", limpiar_remito, "0002-00001127", "0002-00001127", False),
+    ("R13b", limpiar_fecha, "07/03/2026", date(2026, 3, 7), True),  # día/mes, nunca mes/día
+    ("R14", limpiar_fecha, "2028-02-29", date(2028, 2, 29), False),  # bisiesto
+    ("R18", limpiar_cantidad, 3.0, 3, True),
+    ("R21", limpiar_estado, " Abierta ", "abierta", True),
+    ("R21", limpiar_estado, "CERRADA", "cerrada", True),
+    ("R24", limpiar_proveedor, "  Proveedor   01 ", "Proveedor 01", True),
+    ("R27", limpiar_descuenta_stock, "SI", True, False),
+    ("R27", limpiar_descuenta_stock, "sí", True, False),
+    ("R27", limpiar_descuenta_stock, "1", True, False),
+    ("R27", limpiar_descuenta_stock, "false", False, False),
+    ("R27", limpiar_descuenta_stock, " no ", False, False),
+    ("R27b", limpiar_descuenta_stock, "tal vez", None, False),
+    (None, limpiar_cantidad, " 12 ", 12, False),
+    (None, limpiar_cantidad, "+3", 3, False),
+]
+
+# Faltantes que no intervienen en la pregunta: la fila se conserva con un aviso.
+# (punto, campo, valor, aviso esperado)
+CONSERVADOS = [
+    ("R23b", "articulo", "", "sin artículo"),
+    ("R26", "motivo", "", "sin motivo"),
+    ("R26", "motivo", None, "sin motivo"),
+    ("R27b", "descuenta_stock", "", "sin dato de stock"),
+    ("R27b", "descuenta_stock", None, "sin dato de stock"),
+]
 
 
 def validar(**cambios):
@@ -16,6 +83,30 @@ def validar(**cambios):
     registro = RegistroLimpieza()
     devolucion = validar_fila(FilaCruda(7, renglon(**cambios)), registro)
     return devolucion, registro
+
+
+class TestCampos(unittest.TestCase):
+
+    def test_rechazos(self):
+        for punto, limpiar, valor, mensaje in RECHAZOS:
+            with self.subTest(punto=punto, valor=valor):
+                with self.assertRaisesRegex(ValorInvalido, mensaje):
+                    limpiar(valor)
+
+    def test_aceptados(self):
+        for punto, limpiar, valor, esperado, corrige in ACEPTADOS:
+            with self.subTest(punto=punto, valor=valor):
+                limpio, correccion = limpiar(valor)
+                self.assertEqual(limpio, esperado)
+                self.assertIs(type(limpio), type(esperado))  # 3 y no 3.0; True y no 1
+                self.assertEqual(correccion is not None, corrige)
+
+    def test_conservados_con_aviso(self):
+        for punto, campo, valor, aviso in CONSERVADOS:
+            with self.subTest(punto=punto, campo=campo, valor=valor):
+                devolucion, registro = validar(**{campo: valor})
+                self.assertIsNotNone(devolucion)
+                self.assertEqual([(e.accion, e.motivo) for e in registro.eventos], [("aviso", aviso)])
 
 
 class TestFilaCompleta(unittest.TestCase):
@@ -37,6 +128,12 @@ class TestFilaCompleta(unittest.TestCase):
         _, registro = validar(estado=" Abierta ", cantidad=0)
         self.assertEqual([e.accion for e in registro.eventos], ["rechazada"])
 
+    def test_R24_la_correccion_queda_en_el_registro(self):
+        devolucion, registro = validar(proveedor="Proveedor 01 ")
+        self.assertEqual(devolucion.proveedor, "Proveedor 01")
+        self.assertEqual((registro.eventos[0].accion, registro.eventos[0].valor_original),
+                         ("corregida", "Proveedor 01 "))
+
     def test_la_clase_devolucion_no_admite_valores_imposibles(self):
         base = dict(remito="0002-00000001", fecha=date(2026, 3, 10), proveedor="P",
                     articulo="", cantidad=1, motivo="", estado="abierta", descuenta_stock=None)
@@ -44,164 +141,6 @@ class TestFilaCompleta(unittest.TestCase):
             with self.subTest(cambio=cambio):
                 with self.assertRaises(ValueError):
                     Devolucion(**{**base, **cambio})
-
-
-class TestRemito(unittest.TestCase):
-
-    def test_R11_remito_mal_formado(self):
-        for valor in ("0002-1127", "2-00001127", "A002-00001127", "0002_00001127",
-                      "0002-000011270", "00020-0001127", "0002-00001127\n0002"):
-            with self.subTest(valor=valor):
-                with self.assertRaisesRegex(ValorInvalido, "formato 0000-00000000"):
-                    limpiar_remito(valor)
-
-    def test_R11_remito_valido(self):
-        self.assertEqual(limpiar_remito("0002-00001127"), ("0002-00001127", None))
-
-    def test_R12_remito_vacio(self):
-        for valor in ("", "   ", None):
-            with self.subTest(valor=valor):
-                with self.assertRaisesRegex(ValorInvalido, "vacío"):
-                    limpiar_remito(valor)
-
-
-class TestFecha(unittest.TestCase):
-
-    def test_R13_formato_no_reconocido(self):
-        for valor in ("15-09-2026", "2026/09/15", "ayer", "2026-9-15", "", None, 20260915):
-            with self.subTest(valor=valor):
-                with self.assertRaisesRegex(ValorInvalido, "formato"):
-                    limpiar_fecha(valor)
-
-    def test_R13b_formato_argentino_se_convierte(self):
-        fecha, correccion = limpiar_fecha("07/03/2026")
-        self.assertEqual(fecha, date(2026, 3, 7))  # día/mes, nunca mes/día
-        self.assertIn("dd/mm/aaaa", correccion)
-
-    def test_R14_fecha_que_no_existe(self):
-        for valor in ("2026-02-30", "31/04/2026", "2026-13-01", "2026-00-10", "2025-02-29"):
-            with self.subTest(valor=valor):
-                with self.assertRaisesRegex(ValorInvalido, "no existe en el calendario"):
-                    limpiar_fecha(valor)
-
-    def test_R14_bisiesto_valido(self):
-        self.assertEqual(limpiar_fecha("2028-02-29"), (date(2028, 2, 29), None))
-
-
-class TestCantidad(unittest.TestCase):
-
-    def test_R16_cantidad_no_numerica(self):
-        for valor in ("dos", "", None, "5 u.", "1e3"):
-            with self.subTest(valor=valor):
-                with self.assertRaisesRegex(ValorInvalido, "no es un número"):
-                    limpiar_cantidad(valor)
-
-    def test_R17_cantidad_cero_o_negativa(self):
-        for valor in (0, -3, "0", "-3"):
-            with self.subTest(valor=valor):
-                with self.assertRaisesRegex(ValorInvalido, "al menos 1"):
-                    limpiar_cantidad(valor)
-
-    def test_R18_cantidad_con_decimales(self):
-        for valor in (2.5, "2.5", "2,5"):
-            with self.subTest(valor=valor):
-                with self.assertRaisesRegex(ValorInvalido, "decimales"):
-                    limpiar_cantidad(valor)
-
-    def test_R18_real_entero_de_json_se_corrige(self):
-        cantidad, correccion = limpiar_cantidad(3.0)
-        self.assertEqual(cantidad, 3)
-        self.assertIs(type(cantidad), int)
-        self.assertIsNotNone(correccion)
-
-    def test_R19_separador_de_miles_es_ambiguo(self):
-        for valor in ("1.000", "12.500"):
-            with self.subTest(valor=valor):
-                with self.assertRaisesRegex(ValorInvalido, "ambigua"):
-                    limpiar_cantidad(valor)
-
-    def test_R20_booleano_no_es_cantidad(self):
-        # isinstance(True, int) es True en Python: sin el chequeo, pasaría como 1.
-        for valor in (True, False):
-            with self.subTest(valor=valor):
-                with self.assertRaisesRegex(ValorInvalido, "verdadero/falso"):
-                    limpiar_cantidad(valor)
-
-    def test_cantidades_validas(self):
-        for valor, esperado in ((5, 5), ("5", 5), (" 12 ", 12), ("+3", 3)):
-            with self.subTest(valor=valor):
-                self.assertEqual(limpiar_cantidad(valor), (esperado, None))
-
-
-class TestEstado(unittest.TestCase):
-
-    def test_R21_estado_con_espacios_o_mayusculas(self):
-        for valor, esperado in ((" Abierta ", "abierta"), ("CERRADA", "cerrada")):
-            with self.subTest(valor=valor):
-                estado, correccion = limpiar_estado(valor)
-                self.assertEqual(estado, esperado)
-                self.assertIn("normalizado", correccion)
-
-    def test_R22_estado_desconocido(self):
-        for valor in ("anulada", "", None, "abiert"):
-            with self.subTest(valor=valor):
-                with self.assertRaisesRegex(ValorInvalido, "no es 'abierta' ni 'cerrada'"):
-                    limpiar_estado(valor)
-
-
-class TestTextos(unittest.TestCase):
-
-    def test_R23_proveedor_vacio(self):
-        for valor in ("", "   ", None):
-            with self.subTest(valor=valor):
-                with self.assertRaisesRegex(ValorInvalido, "proveedor está vacío"):
-                    limpiar_proveedor(valor)
-
-    def test_R23b_articulo_vacio_se_conserva_con_aviso(self):
-        devolucion, registro = validar(articulo="")
-        self.assertIsNotNone(devolucion)
-        self.assertEqual([(e.accion, e.motivo) for e in registro.eventos], [("aviso", "sin artículo")])
-
-    def test_R24_espacios_de_mas(self):
-        self.assertEqual(limpiar_proveedor("  Proveedor   01 "),
-                         ("Proveedor 01", "se quitaron espacios de más"))
-        self.assertEqual(limpiar_texto("Proveedor 01"), ("Proveedor 01", None))
-
-    def test_R24_queda_anotado_en_el_registro(self):
-        devolucion, registro = validar(proveedor="Proveedor 01 ")
-        self.assertEqual(devolucion.proveedor, "Proveedor 01")
-        self.assertEqual(registro.eventos[0].accion, "corregida")
-        self.assertEqual(registro.eventos[0].valor_original, "Proveedor 01 ")
-
-    def test_R26_motivo_vacio_se_conserva_con_aviso(self):
-        devolucion, registro = validar(motivo="")
-        self.assertIsNotNone(devolucion)
-        self.assertEqual(devolucion.motivo, "")
-        self.assertEqual([(e.accion, e.motivo) for e in registro.eventos], [("aviso", "sin motivo")])
-
-    def test_R28_null_se_trata_como_vacio(self):
-        devolucion, registro = validar(motivo=None)
-        self.assertEqual(devolucion.motivo, "")
-        _, registro = validar(proveedor=None)
-        self.assertEqual(registro.eventos[0].motivo, "el proveedor está vacío")
-
-
-class TestDescuentaStock(unittest.TestCase):
-
-    def test_R27_variantes_de_si_y_no(self):
-        for valor in (True, "si", "SI", "Sí", "true", "1", " s "):
-            with self.subTest(valor=valor):
-                self.assertEqual(limpiar_descuenta_stock(valor), (True, None))
-        for valor in (False, "no", "NO", "false", "0"):
-            with self.subTest(valor=valor):
-                self.assertEqual(limpiar_descuenta_stock(valor), (False, None))
-
-    def test_R27b_vacio_o_desconocido_se_conserva_sin_dato(self):
-        for valor in ("", None, "tal vez"):
-            with self.subTest(valor=valor):
-                devolucion, registro = validar(descuenta_stock=valor)
-                self.assertIsNone(devolucion.descuenta_stock)
-                self.assertEqual(registro.eventos[0].motivo, "sin dato de stock")
 
 
 if __name__ == "__main__":
