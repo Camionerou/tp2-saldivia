@@ -9,3 +9,6 @@ __pycache__/
 # Archivos locales
 .env
 .DS_Store
+
+# Salidas generadas por el programa (se recrean al ejecutarlo)
+outputs/
