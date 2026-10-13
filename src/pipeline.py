@@ -17,14 +17,6 @@ COLUMNAS_RANKING = ("posicion", "proveedor", "renglones_abiertos", "unidades",
                     "devolucion_mas_vieja", "dias_abierta")
 
 
-class ErrorUmbral(ErrorEntrada):
-    """Se rechazaron demasiadas filas. Lleva el registro para poder guardarlo igual."""
-
-    def __init__(self, mensaje, registro):
-        super().__init__(mensaje)
-        self.registro = registro
-
-
 class ErrorSalida(Exception):
     """No se pudieron escribir las salidas. El mensaje es para el usuario."""
 
@@ -99,15 +91,15 @@ def filtrar_por_corte(devoluciones, corte, registro):
     return dentro
 
 
-def verificar_umbral(filas_leidas, registro, umbral=UMBRAL_RECHAZO):
+def verificar_umbral(resultado, umbral=UMBRAL_RECHAZO):
     """R34: si se rechaza más de la mitad, el problema es el archivo."""
-    rechazadas = registro.contar("rechazada")
-    if rechazadas > filas_leidas * umbral:
-        raise ErrorUmbral(
-            f"Se rechazaron {rechazadas} de {filas_leidas} filas (más del {umbral:.0%}). "
-            f"Motivo más frecuente: {registro.motivo_mas_frecuente('rechazada')}. "
+    rechazadas = resultado.registro.contar("rechazada")
+    if rechazadas > resultado.filas_leidas * umbral:
+        raise ErrorEntrada(
+            f"Se rechazaron {rechazadas} de {resultado.filas_leidas} filas (más del {umbral:.0%}). "
+            f"Motivo más frecuente: {resultado.registro.motivo_mas_frecuente('rechazada')}. "
             "Probablemente el archivo no es un extracto de devoluciones, cambió su "
-            "formato o la fecha de corte es incorrecta.", registro)
+            "formato o la fecha de corte es incorrecta. Revisá registro_limpieza.csv.")
 
 
 def armar_ranking(devoluciones, corte):
@@ -120,7 +112,7 @@ def armar_ranking(devoluciones, corte):
     return sorted(resumenes.values(), key=ResumenProveedor.orden)
 
 
-def procesar(ruta, corte=None, umbral=UMBRAL_RECHAZO):
+def procesar(ruta, corte=None):
     """Ejecuta el flujo completo sobre un archivo y devuelve el `Resultado`."""
     fuente = fuente_para(ruta)
     filas = fuente.cargar()
@@ -136,31 +128,47 @@ def procesar(ruta, corte=None, umbral=UMBRAL_RECHAZO):
         # de hoy, para que el resultado dependa solo de la entrada.
         corte = corte or max(d.fecha for d in validas)
         validas = filtrar_por_corte(validas, corte, registro)
-    verificar_umbral(len(filas), registro, umbral)
 
     return Resultado(len(filas), validas, armar_ranking(validas, corte),
                      registro, corte, fuente.avisos)
 
 
-def guardar_ranking(ranking, ruta):
-    # R39: utf-8-sig para que Excel muestre bien los acentos.
-    with open(ruta, "w", encoding="utf-8-sig", newline="") as archivo:
-        escritor = csv.writer(archivo)
-        escritor.writerow(COLUMNAS_RANKING)
-        for posicion, r in enumerate(ranking, start=1):
-            escritor.writerow([posicion, r.proveedor, r.renglones, r.unidades,
-                               r.fecha_mas_vieja.isoformat(), r.dias_mas_vieja])
+def escribir_csv(ruta, encabezado, filas):
+    """Escribe un CSV pensado para abrir en Excel."""
+    try:
+        ruta.parent.mkdir(parents=True, exist_ok=True)  # R37
+        # R39: utf-8-sig para que Excel muestre bien los acentos.
+        with open(ruta, "w", encoding="utf-8-sig", newline="") as archivo:
+            escritor = csv.writer(archivo)
+            escritor.writerow(encabezado)
+            escritor.writerows(filas)
+    except OSError as error:  # R38
+        raise ErrorSalida(f"No se pudo escribir '{ruta}' ({error.strerror}). "
+                          "¿Está abierto en Excel o la carpeta no tiene permisos?")
 
 
 def guardar_salidas(resultado, carpeta):
-    """Escribe ranking.csv y registro_limpieza.csv en `carpeta`."""
+    """Guarda el registro siempre y el ranking solo si el resultado es confiable.
+
+    El registro va primero: si se rechazaron demasiadas filas (R34), es lo que
+    sirve para diagnosticar. En ese caso se borra el ranking de una corrida
+    anterior, para que no quede uno viejo al lado de un registro nuevo.
+    """
     carpeta = Path(carpeta)
-    ruta = carpeta / "ranking.csv"
+    escribir_csv(carpeta / "registro_limpieza.csv", RegistroLimpieza.COLUMNAS,
+                 resultado.registro.como_filas())
+    ruta_ranking = carpeta / "ranking.csv"
     try:
-        carpeta.mkdir(parents=True, exist_ok=True)  # R37
-        guardar_ranking(resultado.ranking, ruta)
-        ruta = carpeta / "registro_limpieza.csv"
-        resultado.registro.guardar(ruta)
-    except OSError as error:  # R38
-        raise ErrorSalida(f"No se pudo escribir '{ruta}' ({error.strerror}). "
-                           "¿Está abierto en Excel o la carpeta no tiene permisos?") from None
+        verificar_umbral(resultado)
+    except ErrorEntrada as error:
+        try:
+            ruta_ranking.unlink(missing_ok=True)
+        except OSError:  # R38
+            raise ErrorSalida(f"{error} Además, no se pudo borrar el ranking anterior "
+                              f"'{ruta_ranking}': ¿está abierto en Excel?")
+        raise error
+    filas = []
+    for posicion, r in enumerate(resultado.ranking, start=1):
+        filas.append([posicion, r.proveedor, r.renglones, r.unidades,
+                      r.fecha_mas_vieja.isoformat(), r.dias_mas_vieja])
+    escribir_csv(ruta_ranking, COLUMNAS_RANKING, filas)

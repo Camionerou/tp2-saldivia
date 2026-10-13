@@ -1,5 +1,4 @@
 """Clases del dominio: la devolución, el resumen por proveedor y el registro de limpieza."""
-import csv
 from dataclasses import dataclass, field
 from datetime import date
 
@@ -113,11 +112,7 @@ class RegistroLimpieza:
         motivos = [e.motivo for e in self.eventos if e.accion == accion]
         return max(sorted(set(motivos)), key=motivos.count) if motivos else None
 
-    def guardar(self, ruta):
-        # R39: utf-8-sig para que Excel muestre bien los acentos.
-        with open(ruta, "w", encoding="utf-8-sig", newline="") as archivo:
-            escritor = csv.writer(archivo)
-            escritor.writerow(self.COLUMNAS)
-            for e in self.eventos:
-                fila = "" if e.numero_fila is None else e.numero_fila
-                escritor.writerow([fila, e.remito, e.accion, e.campo, e.valor_original, e.motivo])
+    def como_filas(self):
+        """Los eventos como filas para escribir en registro_limpieza.csv."""
+        return [["" if e.numero_fila is None else e.numero_fila, e.remito, e.accion,
+                 e.campo, e.valor_original, e.motivo] for e in self.eventos]
