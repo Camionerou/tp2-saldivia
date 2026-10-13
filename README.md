@@ -73,13 +73,10 @@ Procedencia, variables, errores incluidos y limitaciones en [`data/README.md`](d
 
 ## Instalación
 
-Requiere **Python 3.10 o superior**. No usa bibliotecas externas, así que no hay nada
-que instalar:
+Requiere **Python 3.10 o superior** y nada más: no usa bibliotecas externas.
 
 ```bash
-git clone https://github.com/Camionerou/tp2-saldivia.git
-cd tp2-saldivia
-python3 --version   # 3.10 o superior
+git clone https://github.com/Camionerou/tp2-saldivia.git && cd tp2-saldivia
 ```
 
 ## Uso
@@ -109,10 +106,10 @@ depende solo de la entrada y no del día en que se ejecuta.
 python3 -m unittest discover -s tests -v
 ```
 
-82 pruebas: el caso normal con resultados exactos, cada punto de ruptura (entradas
-inválidas y casos límite), propiedades que el resultado tiene que cumplir siempre
-(conservación de filas y unidades, equivalencia CSV/JSON, reproducibilidad, rangos y
-orden) y un test que verifica que cada punto documentado tenga su prueba.
+Cubren el caso normal con resultados exactos, cada punto de ruptura, propiedades que el
+resultado cumple siempre (conservación de filas y unidades, equivalencia CSV/JSON,
+reproducibilidad, rangos y orden) y un test que verifica que cada punto documentado
+tenga su prueba.
 
 ## Ejemplo de resultado
 
@@ -140,7 +137,6 @@ fila,remito,accion,campo,valor_original,motivo
 5,0002-00001105,corregida,estado, Abierta ,estado ' Abierta ' normalizado a 'abierta'
 12,0002-00001110,rechazada,fecha,2026-02-30,la fecha 2026-02-30 no existe en el calendario
 35,0002-00001132,duplicada,fila,,renglón idéntico al de la fila 34
-82,0002-00001103,aviso,remito,0002-00001103,"remito reutilizado: ya se usó en la fila 3 (2026-01-09, Proveedor 01)"
 ```
 
 ## Organización del código
@@ -151,11 +147,11 @@ tp2-saldivia/
 ├── requirements.txt          sin dependencias externas
 ├── .gitignore
 ├── src/
-│   ├── main.py               línea de comandos: argumentos, pantalla y códigos de salida
-│   ├── fuentes.py            FuenteDatos (abstracta), FuenteCSV y FuenteJSON
-│   ├── validacion.py         limpieza y validación de cada campo; expresiones regulares
+│   ├── fuentes.py            1. leer: FuenteDatos (abstracta), FuenteCSV y FuenteJSON
+│   ├── validacion.py         2. validar cada campo; expresiones regulares
+│   ├── pipeline.py           3-4. duplicados, fecha de corte, umbral, ranking y salidas
 │   ├── modelos.py            Devolucion, ResumenProveedor y RegistroLimpieza
-│   ├── pipeline.py           duplicados, fecha de corte, umbral, ranking y salidas
+│   ├── main.py               5. comunicar: línea de comandos, pantalla, códigos de salida
 │   └── generar_datos.py      genera el extracto simulado
 ├── tests/                    pruebas con unittest
 ├── data/                     extracto en CSV y JSON, y su README
@@ -164,31 +160,21 @@ tp2-saldivia/
 └── outputs/                  se genera al ejecutar; no se versiona
 ```
 
-El flujo es `leer → validar → limpiar → analizar → comunicar`:
-
-1. `fuente_para(ruta)` elige `FuenteCSV` o `FuenteJSON`, y `cargar()` devuelve filas
-   crudas con las columnas normalizadas.
-2. `validar_fila` convierte cada fila en una `Devolucion` o la rechaza, anotando el motivo.
-3. `quitar_duplicados`, `avisar_remitos_reutilizados` y `filtrar_por_corte` terminan la limpieza.
-4. `armar_ranking` agrupa las abiertas por proveedor en `ResumenProveedor` y las ordena.
-5. `main.py` muestra el resultado y `guardar_salidas` lo escribe en `outputs/`.
+Los números marcan la etapa del flujo `leer → validar → limpiar → analizar → comunicar`.
 
 ## Decisiones de diseño
 
 - **`FuenteDatos` y sus dos implementaciones.** Lo que es igual para los dos formatos
   (verificar que el archivo exista, decodificarlo, revisar columnas, detectar que esté
-  vacío) está una sola vez en la clase base. Cada subclase solo implementa
-  `_interpretar()`, que es lo que de verdad cambia entre CSV y JSON. El resto de la
-  aplicación usa `cargar()` sin saber de qué formato viene; por eso el mismo extracto
-  da exactamente el mismo resultado en los dos.
-- **`Devolucion`** es inmutable (`frozen=True`) y valida sus propios valores al
-  construirse. Es una segunda barrera: aunque una devolución se cree sin pasar por la
-  validación, no puede existir una con cantidad 0 o estado desconocido. Sus métodos
+  vacío) está una sola vez en la clase base; cada subclase solo implementa
+  `_interpretar()`. El resto de la aplicación usa `cargar()` sin saber de qué formato
+  viene, y por eso el mismo extracto da exactamente el mismo resultado en los dos.
+- **`Devolucion`** es inmutable (`frozen=True`) y se niega a existir con valores
+  imposibles: es una segunda barrera detrás de la validación. Sus métodos
   (`esta_abierta`, `dias_abierta`, `clave`) son las preguntas que el análisis le hace.
-- **`ResumenProveedor`** acumula las devoluciones abiertas de un proveedor y define el
-  criterio de orden del ranking en un solo lugar (`orden()`).
-- **`RegistroLimpieza`** concentra todo lo que la limpieza hace, para que ninguna fila
-  desaparezca sin rastro.
+- **`ResumenProveedor`** acumula las abiertas de un proveedor y define el orden del
+  ranking en un solo lugar. **`RegistroLimpieza`** junta todo lo que hace la limpieza,
+  para que ninguna fila desaparezca sin rastro.
 - **Expresiones regulares** (`src/validacion.py`):
   - `\d{4}-\d{8}` valida el número de remito (punto de venta y número).
   - `(\d{4})-(\d{2})-(\d{2})` y `(\d{2})/(\d{2})/(\d{4})` reconocen las fechas en
@@ -201,23 +187,20 @@ El flujo es `leer → validar → limpiar → analizar → comunicar`:
 
 ## Decisiones de limpieza
 
-El criterio general: **si el archivo completo no es confiable, la aplicación se detiene;
-si una fila no sirve, se rechaza y se registra; si un valor se puede corregir sin
-adivinar, se corrige y se registra.** Los datos que faltan pero no intervienen en la
-pregunta (motivo, artículo, dato de stock) no hacen perder la fila.
+Criterio general: **si el archivo completo no es confiable, la aplicación se detiene; si
+una fila no sirve, se rechaza y se registra; si un valor se puede corregir sin adivinar,
+se corrige y se registra.**
 
-Las más importantes:
+- **Se rechaza la fila:** fecha inexistente (`2026-02-30`), cantidad `"dos"`, `0` o
+  `"1.000"` (ambigua), estado desconocido, proveedor vacío, remito mal formado.
+- **Se corrige:** estado `" Abierta "`, fecha `07/03/2026`, espacios de más.
+- **Se conserva con aviso:** motivo, artículo o dato de stock vacíos; no intervienen en la pregunta.
+- **Duplicados:** de un renglón idéntico se conserva el primero. El mismo número de
+  remito con otros datos **no** es duplicado: un remito tiene varios renglones y la
+  numeración se reutiliza.
+- **Más del 50 % rechazado:** se detiene, porque el problema es el archivo.
 
-| Situación | Decisión |
-|---|---|
-| Fecha `2026-02-30`, cantidad `"dos"`, `0` o `"1.000"`, estado desconocido, proveedor vacío, remito mal formado | Se rechaza la fila |
-| Estado `" Abierta "`, fecha `07/03/2026`, espacios de más | Se corrige y se registra |
-| Motivo vacío, dato de stock vacío | Se conserva la fila con un aviso |
-| Renglón idéntico repetido | Se conserva el primero |
-| Mismo número de remito con otros datos | **Se conservan los dos**: un remito puede tener varios renglones y la numeración se reutiliza |
-| Más del 50 % de filas rechazadas | Se detiene: el problema es el archivo |
-
-El detalle completo (46 puntos de ruptura con su justificación y su test) está en
+Los 47 puntos de ruptura, con su justificación y su test, están en
 [`docs/puntos_de_ruptura.md`](docs/puntos_de_ruptura.md).
 
 ## Interpretación y limitaciones
