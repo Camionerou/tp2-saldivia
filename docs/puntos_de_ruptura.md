@@ -8,7 +8,8 @@ Cada punto tiene un identificador (`R01`, `R02`, ...). El mismo identificador ap
 
 - en este documento,
 - como comentario junto a la defensa en el código (`# R14`),
-- en el nombre del test que lo comprueba (`test_R14_fecha_que_no_existe`).
+- en el test que lo comprueba: en su nombre (`test_R10f_lineas_vacias_antes_del_encabezado`)
+  o como primera columna de una tabla de casos (`("R14", limpiar_fecha, "2026-02-30", ...)`).
 
 Así, `grep -rn R14 src tests docs` encuentra la regla, la defensa y la prueba. El test
 `T01` verifica que todo identificador de este documento tenga al menos un test y que
@@ -174,7 +175,11 @@ Son la red de seguridad contra errores que no anticipamos.
 
 - Framework: `unittest`, de la biblioteca estándar (el proyecto no tiene dependencias externas).
 - Comando, desde la raíz del proyecto: `python3 -m unittest discover -s tests -v`
-- Cada test que cubre un punto se llama `test_<ID>_<descripcion>`.
+- Cada punto se prueba con un test llamado `test_<ID>_<descripcion>` o con una fila de
+  una **tabla de casos**, cuyo primer valor es el ID. Las tablas (`RECHAZOS`,
+  `ACEPTADOS`, `CONSERVADOS` en `test_validacion.py`; `ABORTOS` en `test_fuentes.py`)
+  juntan los casos que tienen la misma forma (valor → resultado esperado). Agregar un
+  caso es agregar una fila, y si un caso falla, `subTest` indica cuál.
 - Cada test arma **su propio archivo mínimo** en una carpeta temporal que se borra al
   terminar (`tests/ayuda.py`). Así cada prueba muestra en el mismo lugar qué entrada
   produce qué resultado, y prueba una sola cosa.
