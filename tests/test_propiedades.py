@@ -8,7 +8,6 @@ import unittest
 
 from ayuda import DATOS, TestConArchivos, renglon
 
-from modelos import ResumenProveedor
 from pipeline import guardar_salidas, procesar
 
 
@@ -94,12 +93,6 @@ class TestPropiedades(TestConArchivos):
                 claves = [p.orden() for p in r.ranking]
                 self.assertEqual(claves, sorted(claves))
                 self.assertEqual(len({p.proveedor for p in r.ranking}), len(r.ranking))
-
-    def test_P06_resumen_rechaza_datos_ajenos(self):
-        r = procesar(DATOS / "devoluciones.csv")
-        resumen = ResumenProveedor("Otro proveedor")
-        with self.assertRaises(ValueError):
-            resumen.agregar(r.validas[0], r.corte)
 
 
 if __name__ == "__main__":

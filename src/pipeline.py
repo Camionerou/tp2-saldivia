@@ -33,7 +33,12 @@ class Resultado:
 
 def validar_filas(filas, registro):
     """Valida cada fila cruda; las que no sirven quedan en el registro."""
-    return [d for d in (validar_fila(f, registro) for f in filas) if d is not None]
+    validas = []
+    for fila in filas:
+        devolucion = validar_fila(fila, registro)
+        if devolucion is not None:
+            validas.append(devolucion)
+    return validas
 
 
 def quitar_duplicados(devoluciones, registro):

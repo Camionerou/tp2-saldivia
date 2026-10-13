@@ -24,7 +24,7 @@ def fecha_de_corte(texto):
         return date.fromisoformat(texto)
     except ValueError:
         raise argparse.ArgumentTypeError(
-            f"'{texto}' no es una fecha válida con formato AAAA-MM-DD") from None
+            f"'{texto}' no es una fecha válida con formato AAAA-MM-DD")
 
 
 def leer_argumentos(argv):

@@ -36,7 +36,7 @@ class FilaCruda:
     """
     numero_fila: int
     valores: dict
-    problema: str | None = None
+    problema: str = None
 
 
 def normalizar_columna(nombre):
@@ -88,7 +88,7 @@ class FuenteDatos(ABC):
         except UnicodeDecodeError:
             raise ErrorEntrada(
                 f"No se pudo leer '{self.ruta}': no está en UTF-8 ni en Windows-1252. "
-                "Volvé a exportarlo como 'CSV UTF-8'.") from None
+                "Volvé a exportarlo como 'CSV UTF-8'.")
         self.codificacion = "cp1252"
         self.avisos.append("El archivo no está en UTF-8; se leyó como Windows-1252 (cp1252).")
         return texto
@@ -149,7 +149,7 @@ class FuenteJSON(FuenteDatos):
         except json.JSONDecodeError as error:  # R08
             raise ErrorEntrada(
                 f"El JSON '{self.ruta}' está mal formado (línea {error.lineno}, "
-                f"columna {error.colno}): {error.msg}.") from None
+                f"columna {error.colno}): {error.msg}.")
         if not isinstance(datos, list):  # R09
             raise ErrorEntrada(
                 f"El JSON '{self.ruta}' debe ser una lista de devoluciones "

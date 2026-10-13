@@ -59,11 +59,13 @@ def limpiar_remito(valor):
 
 def limpiar_fecha(valor):
     texto, _ = limpiar_texto(valor)
-    if coincidencia := PATRON_FECHA_ISO.fullmatch(texto):
-        anio, mes, dia = coincidencia.groups()
+    iso = PATRON_FECHA_ISO.fullmatch(texto)
+    argentina = PATRON_FECHA_AR.fullmatch(texto)
+    if iso:
+        anio, mes, dia = iso.groups()
         correccion = None
-    elif coincidencia := PATRON_FECHA_AR.fullmatch(texto):  # R13b
-        dia, mes, anio = coincidencia.groups()
+    elif argentina:  # R13b
+        dia, mes, anio = argentina.groups()
         correccion = "fecha en formato dd/mm/aaaa convertida a aaaa-mm-dd"
     else:  # R13
         raise ValorInvalido("la fecha no tiene formato aaaa-mm-dd ni dd/mm/aaaa")
@@ -71,7 +73,7 @@ def limpiar_fecha(valor):
     try:
         return date(int(anio), int(mes), int(dia)), correccion
     except ValueError:
-        raise ValorInvalido(f"la fecha {texto} no existe en el calendario") from None
+        raise ValorInvalido(f"la fecha {texto} no existe en el calendario")
 
 
 def limpiar_cantidad(valor):

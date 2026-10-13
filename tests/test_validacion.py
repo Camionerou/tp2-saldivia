@@ -23,8 +23,8 @@ class TestFilaCompleta(unittest.TestCase):
     def test_caso_normal(self):
         devolucion, registro = validar()
         self.assertEqual(devolucion, Devolucion("0002-00000001", date(2026, 3, 10), "Proveedor 01",
-                                                "Llave de luces", 5, "falso contacto", "abierta", False))
-        self.assertEqual(devolucion.numero_fila, 7)
+                                                "Llave de luces", 5, "falso contacto", "abierta", False,
+                                                numero_fila=7))
         self.assertEqual(registro.eventos, [])
 
     def test_una_fila_con_varios_errores_los_registra_todos(self):
