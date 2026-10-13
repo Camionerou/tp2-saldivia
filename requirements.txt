@@ -1,1 +1,1 @@
-# Sin dependencias externas: solo la biblioteca estándar de Python 3.
+# No hay dependencias externas: solo la biblioteca estándar de Python 3.10 o superior.
