@@ -19,3 +19,7 @@ En macOS, usar python3 si el interprete tiene ese nombre.
 
 ## Resultado esperado
 Total de ventas: 5500
+
+
+
+Ejemplo utilizado en la clase de POD
