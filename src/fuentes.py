@@ -110,32 +110,30 @@ class FuenteCSV(FuenteDatos):
     def _interpretar(self, texto):
         separador = self._detectar_separador(texto)
         lector = csv.reader(io.StringIO(texto, newline=""), delimiter=separador)
-        try:
-            encabezado = next(lector)
-        except StopIteration:
-            raise ErrorEntrada(f"El archivo '{self.ruta}' está vacío.") from None  # R04
-        columnas = [normalizar_columna(c) for c in encabezado]
-
+        columnas = None
         filas = []
         vacias = 0
         for campos in lector:
             # R10e: líneas en blanco o con solo separadores (';;;;;;;' de Excel).
+            # R10f: también pueden aparecer antes del encabezado.
             if all(not c.strip() for c in campos):
                 vacias += 1
-                continue
-            valores = dict(zip(columnas, campos))
-            problema = None
-            if len(campos) != len(columnas):  # R10d
-                problema = (f"tiene {len(campos)} campos y el encabezado tiene "
-                            f"{len(columnas)}; los valores quedarían corridos de columna")
-            filas.append(FilaCruda(len(filas) + 1, valores, problema))
+            elif columnas is None:
+                columnas = [normalizar_columna(c) for c in campos]
+            else:
+                valores = dict(zip(columnas, campos))
+                problema = None
+                if len(campos) != len(columnas):  # R10d
+                    problema = (f"tiene {len(campos)} campos y el encabezado tiene "
+                                f"{len(columnas)}; los valores quedarían corridos de columna")
+                filas.append(FilaCruda(len(filas) + 1, valores, problema))
         if vacias:
             self.avisos.append(f"Se ignoraron {vacias} líneas vacías.")
-        return columnas, filas
+        return columnas or [], filas
 
     def _detectar_separador(self, texto):
         """R07: Excel con configuración argentina separa con ';'."""
-        primera = texto.split("\n", 1)[0]
+        primera = texto.lstrip(" \t\r\n;,").split("\n", 1)[0]  # R10f
         if primera.count(";") > primera.count(","):
             self.avisos.append("El CSV usa ';' como separador.")
             return ";"

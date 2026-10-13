@@ -95,6 +95,7 @@ Columnas obligatorias: `remito`, `fecha`, `proveedor`, `articulo`, `cantidad`, `
 | R10c | Columnas de más | Viene `observaciones` | AVISAR y se ignora. | No afecta la pregunta, pero el usuario tiene que saber que esa información no se usa. |
 | R10d | Fila con más o menos campos que el encabezado, u objeto JSON al que le falta un campo | Una coma de más en el motivo sin comillas | RECHAZAR FILA | `csv` no se queja: completa o junta lo que sobra, y los valores quedarían corridos de columna (la cantidad podría terminar en el motivo). |
 | R10e | Líneas vacías o con solo separadores | `,,,,,,,` o `;;;;;;;` al final de una exportación de Excel | Se IGNORAN y se avisa cuántas fueron. No cuentan como filas. | Excel las agrega al exportar hojas con formato. No son devoluciones; rechazarlas llenaría el registro de ruido. |
+| R10f | Líneas vacías **antes** del encabezado | El archivo empieza con una línea en blanco y recién después viene `remito;fecha;...` | Se IGNORAN igual que R10e: el encabezado es la primera línea con contenido, y el separador también se detecta en ella | Sin esto la app tomaba la línea vacía como encabezado y abortaba diciendo que faltaban todas las columnas, en un archivo que estaba bien. Este error se encontró revisando el código y se agregó con su test. |
 
 ### 2.3 Campos de cada fila (`src/validacion.py`)
 
