@@ -105,8 +105,7 @@ Columnas obligatorias: `remito`, `fecha`, `proveedor`, `articulo`, `cantidad`, `
 | R15 | `fecha` | Posterior a la fecha de corte | Devolución del 20/03 con corte al 10/03 | RECHAZAR FILA ("posterior a la fecha de corte") | A la fecha de corte esa devolución todavía no existía; incluirla daría una antigüedad negativa. |
 | R16 | `cantidad` | No numérica o vacía | `"dos"`, `""`, `null`, `"1e3"` | RECHAZAR FILA | No se pueden sumar unidades. |
 | R17 | `cantidad` | Cero o negativa | `0`, `-3` | RECHAZAR FILA | Una devolución de 0 unidades no existe; una negativa sería una reposición mal cargada. |
-| R18 | `cantidad` | Con decimales | `2.5`, `"2,5"` | RECHAZAR FILA. Excepción: un número JSON entero escrito como real (`3.0`) se CORRIGE a `3`. | Se devuelven piezas enteras. `3.0` es un artefacto típico de exportar desde planillas y no hay ambigüedad. |
-| R19 | `cantidad` | Separador de miles | `"1.000"` | RECHAZAR FILA | Es ambiguo: con formato argentino es mil, con formato inglés es uno. Las devoluciones reales son de 1 a 20 unidades, así que no se adivina. |
+| R18 | `cantidad` | Con decimales o separador de miles | `2.5`, `"2,5"`, `"1.000"` | RECHAZAR FILA. Excepción: un número JSON entero escrito como real (`3.0`) se CORRIGE a `3`. | Se devuelven piezas enteras. `"1.000"` es ambiguo (mil con formato argentino, uno con formato inglés), así que no se adivina. `3.0` es un artefacto típico de exportar desde planillas y no hay ambigüedad. |
 | R20 | `cantidad` | Booleano en JSON | `true` | RECHAZAR FILA | **Trampa de Python:** `bool` es subclase de `int`; `isinstance(True, int)` da `True` y `True + 1 == 2`. Sin un chequeo explícito, `true` pasaría como una unidad. |
 | R21 | `estado` | Espacios o mayúsculas | `" Abierta "`, `"CERRADA"` | CORREGIR y avisar | Es el mismo valor escrito distinto. |
 | R22 | `estado` | Valor desconocido | `"anulada"`, `""` | RECHAZAR FILA | Solo existen `abierta` y `cerrada`. Una devolución con otro estado no se puede contar como abierta ni descartar como cerrada sin adivinar. |
@@ -190,7 +189,7 @@ tiene un resultado exacto, que `tests/test_pipeline.py` comprueba:
 | Concepto | Cantidad | Filas | Punto |
 |---|---|---|---|
 | Filas leídas | 83 | — | — |
-| Rechazadas | 7 | 12 (`2026-02-30`), 26 (`0002-1127`), 32 (cantidad `dos`), 38 (cantidad `0`), 46 (cantidad `1.000`), 49 (estado `anulada`), 57 (proveedor vacío) | R14, R11, R16, R17, R19, R22, R23 |
+| Rechazadas | 7 | 12 (`2026-02-30`), 26 (`0002-1127`), 32 (cantidad `dos`), 38 (cantidad `0`), 46 (cantidad `1.000`), 49 (estado `anulada`), 57 (proveedor vacío) | R14, R11, R16, R17, R18, R22, R23 |
 | Duplicadas | 1 | 35, copia de la 34 | R29 |
 | Válidas | 75 | 83 − 7 − 1 | P01 |
 | Corregidas | 5 | 5 y 10 (estado), 15 y 52 (fecha `dd/mm/aaaa`), 23 (espacio en el proveedor) | R21, R13b, R24 |

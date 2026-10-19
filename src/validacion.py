@@ -21,9 +21,7 @@ PATRON_FECHA_ISO = re.compile(r"(\d{4})-(\d{2})-(\d{2})")
 PATRON_FECHA_AR = re.compile(r"(\d{2})/(\d{2})/(\d{4})")
 # Cantidad entera, con signo opcional para poder dar un mensaje claro si es negativa.
 PATRON_ENTERO = re.compile(r"[+-]?\d+")
-# 1.000 / 12.500: separador de miles argentino (ambiguo, ver R19).
-PATRON_MILES = re.compile(r"\d{1,3}(\.\d{3})+")
-# 2.5 / 2,5: número con decimales.
+# 2.5 / 2,5 / 1.000: número con decimales o con separador de miles.
 PATRON_DECIMAL = re.compile(r"[+-]?\d+[.,]\d+")
 
 VERDADEROS = {"si", "sí", "s", "true", "verdadero", "1"}
@@ -90,11 +88,9 @@ def limpiar_cantidad(valor):
         texto = como_texto(valor).strip()
         if PATRON_ENTERO.fullmatch(texto):
             cantidad, correccion = int(texto), None
-        elif PATRON_MILES.fullmatch(texto):  # R19
-            raise ValorInvalido(f"la cantidad '{texto}' es ambigua: puede ser "
-                                "un número con separador de miles o con decimales")
         elif PATRON_DECIMAL.fullmatch(texto):  # R18
-            raise ValorInvalido("la cantidad tiene decimales y se devuelven piezas enteras")
+            raise ValorInvalido(f"la cantidad '{texto}' no es un número entero "
+                                "(tiene decimales o separador de miles)")
         else:  # R16
             raise ValorInvalido("la cantidad está vacía o no es un número")
     if cantidad < 1:  # R17

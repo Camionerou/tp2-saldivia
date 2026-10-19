@@ -36,8 +36,7 @@ RECHAZOS = [
     ("R17", limpiar_cantidad, "-3", "al menos 1"),
     ("R18", limpiar_cantidad, 2.5, "decimales"),
     ("R18", limpiar_cantidad, "2,5", "decimales"),
-    ("R19", limpiar_cantidad, "1.000", "ambigua"),
-    ("R19", limpiar_cantidad, "12.500", "ambigua"),
+    ("R18", limpiar_cantidad, "1.000", "separador de miles"),  # ¿mil o uno? no se adivina
     ("R20", limpiar_cantidad, True, "verdadero/falso"),  # isinstance(True, int) es True
     ("R20", limpiar_cantidad, False, "verdadero/falso"),
     ("R22", limpiar_estado, "anulada", "no es 'abierta' ni 'cerrada'"),
