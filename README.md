@@ -30,6 +30,27 @@ material que la fábrica ya pagó o va a pagar y no recibió en condiciones.
 
 > **¿Qué proveedores tienen más devoluciones abiertas y hace cuántos días que esperan?**
 
+## Algoritmo
+
+```
+ archivo .csv / .json
+        │
+        ▼
+ 1. LEER ──────────── FuenteCSV / FuenteJSON  ──► filas crudas      (fuentes.py)
+        │
+        ▼
+ 2. VALIDAR ───────── campo por campo         ──► filas válidas     (validacion.py)
+        │                                         + rechazos y correcciones al registro
+        ▼
+ 3. LIMPIAR ───────── duplicados, avisos,     ──► filas limpias     (pipeline.py)
+        │             filtro por fecha de corte
+        ▼
+ 4. ANALIZAR ──────── agrupar por proveedor   ──► ranking ordenado  (pipeline.py, modelos.py)
+        │
+        ▼
+ 5. COMUNICAR ─────── pantalla + 2 archivos CSV                     (main.py, pipeline.py)
+```
+
 ## Resultado y cómo leerlo
 
 Un ranking de proveedores con devoluciones abiertas a una fecha de corte:
@@ -45,6 +66,10 @@ El primero del ranking es el que tiene más renglones pendientes; si hay empate,
 espera hace más tiempo. Se muestra en pantalla y se guarda en `outputs/ranking.csv`.
 Junto con el ranking se guarda `outputs/registro_limpieza.csv`, con cada fila
 rechazada, corregida, duplicada o con aviso, y el motivo.
+
+Ninguna fila desaparece sin explicación: válidas + rechazadas + duplicadas siempre
+da las filas leídas (lo verifica el test P01). Si el ranking no le cierra al usuario,
+el registro muestra exactamente qué se descartó y por qué.
 
 ## Alcance
 
@@ -106,10 +131,12 @@ depende solo de la entrada y no del día en que se ejecuta.
 python3 -m unittest discover -s tests -v
 ```
 
-Cubren el caso normal con resultados exactos, cada punto de ruptura, propiedades que el
-resultado cumple siempre (conservación de filas y unidades, equivalencia CSV/JSON,
-reproducibilidad, rangos y orden) y un test que verifica que cada punto documentado
-tenga su prueba.
+| Qué se prueba | Dónde | Ejemplos |
+|---|---|---|
+| Caso normal, con resultados exactos | `test_pipeline.py`, `test_validacion.py`, `test_main.py` | 83 leídas, 75 válidas, 7 rechazadas; primer puesto del ranking |
+| Entradas inválidas y casos límite | `test_fuentes.py`, `test_validacion.py`, `test_pipeline.py` | archivo inexistente, JSON mal formado, fecha `2026-02-30`, cantidad `"1.000"`, umbral justo en el 50 % |
+| Propiedades del resultado | `test_propiedades.py` | conservación de filas (P01) y unidades (P02), equivalencia CSV/JSON (P03), reproducibilidad (P04), rangos (P05), orden (P06) |
+| Trazabilidad | `test_trazabilidad.py` | cada punto de ruptura documentado tiene su test (T01) |
 
 ## Ejemplo de resultado
 
