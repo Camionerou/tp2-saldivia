@@ -31,7 +31,6 @@ class Resultado:
 
 
 def validar_filas(filas, registro):
-    """Valida cada fila cruda; las que no sirven quedan en el registro."""
     validas = []
     for fila in filas:
         devolucion = validar_fila(fila, registro)
@@ -106,7 +105,6 @@ def armar_ranking(devoluciones, corte):
 
 
 def procesar(ruta, corte=None):
-    """Ejecuta el flujo completo sobre un archivo y devuelve el `Resultado`."""
     fuente = fuente_para(ruta)
     filas = fuente.cargar()
     registro = RegistroLimpieza()
@@ -126,7 +124,6 @@ def procesar(ruta, corte=None):
 
 
 def escribir_csv(ruta, encabezado, filas):
-    """Escribe un CSV pensado para abrir en Excel."""
     try:
         ruta.parent.mkdir(parents=True, exist_ok=True)  # R37
         # R39: utf-8-sig para que Excel muestre bien los acentos.
