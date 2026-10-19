@@ -224,7 +224,7 @@ se corrige y se registra.**
   numeración se reutiliza.
 - **Más del 50 % rechazado:** se detiene, porque el problema es el archivo.
 
-Los 47 puntos de ruptura, con su justificación y su test, están en
+Los 45 puntos de ruptura, con su justificación y su test, están en
 [`docs/puntos_de_ruptura.md`](docs/puntos_de_ruptura.md).
 
 ## Interpretación y limitaciones
@@ -238,6 +238,6 @@ Los 47 puntos de ruptura, con su justificación y su test, están en
   devoluciones caras puede quedar abajo. El extracto no tiene montos.
 - "Abierta" significa abierta en el sistema. Si alguien resolvió una devolución pero no
   la cerró, la aplicación no puede saberlo.
-- Los nombres de proveedor que solo difieren en mayúsculas no se unifican (se avisa),
+- Los nombres de proveedor que solo difieren en mayúsculas no se unifican,
   porque decidir si son la misma empresa le corresponde a Compras.
 - Las fechas con barra se interpretan siempre como día/mes/año.

@@ -4,7 +4,6 @@ Cada etapa es una función con una sola responsabilidad; `procesar` las encadena
 Los comentarios `# Rxx` remiten a docs/puntos_de_ruptura.md.
 """
 import csv
-from collections import defaultdict
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -73,17 +72,6 @@ def avisar_remitos_reutilizados(devoluciones, registro):
                             f"({original.fecha}, {original.proveedor})")
 
 
-def avisar_proveedores_parecidos(devoluciones, registro):
-    """R25: nombres que solo difieren en mayúsculas. Se avisa pero no se unifican."""
-    variantes = defaultdict(set)
-    for d in devoluciones:
-        variantes[d.proveedor.casefold()].add(d.proveedor)
-    for nombres in variantes.values():
-        if len(nombres) > 1:
-            registro.anotar(None, "", "aviso", "proveedor", " / ".join(sorted(nombres)),
-                            "mismo nombre con distintas mayúsculas; no se unificaron")
-
-
 def filtrar_por_corte(devoluciones, corte, registro):
     """R15: una devolución posterior a la fecha de corte todavía no existía."""
     dentro = []
@@ -126,7 +114,6 @@ def procesar(ruta, corte=None):
     validas = validar_filas(filas, registro)
     validas = quitar_duplicados(validas, registro)
     avisar_remitos_reutilizados(validas, registro)
-    avisar_proveedores_parecidos(validas, registro)
 
     if validas:
         # R32: sin corte explícito se usa la fecha más reciente del extracto, no la

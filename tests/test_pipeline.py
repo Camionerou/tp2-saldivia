@@ -80,13 +80,6 @@ class TestAnalisis(TestConArchivos):
         self.assertEqual(rechazo[0].numero_fila, 3)
         self.assertIn("posterior a la fecha de corte", rechazo[0].motivo)
 
-    def test_R25_proveedores_que_difieren_en_mayusculas(self):
-        resultado = procesar(self.json([renglon(proveedor="Proveedor 01"),
-                                        renglon(remito="0002-00000002", proveedor="PROVEEDOR 01")]))
-        self.assertEqual(len(resultado.ranking), 2)  # no se unifican
-        aviso = [e for e in resultado.registro.eventos if e.campo == "proveedor"][0]
-        self.assertIn("distintas mayúsculas", aviso.motivo)
-
     def test_R32_sin_corte_se_usa_la_fecha_mas_reciente(self):
         resultado = procesar(self.json([renglon(fecha="2026-03-01"),
                                         renglon(remito="0002-00000002", fecha="2026-05-20")]))
