@@ -50,7 +50,6 @@ class FuenteDatos(ABC):
     def __init__(self, ruta):
         self.ruta = Path(ruta)
         self.avisos = []          # mensajes generales sobre el archivo
-        self.codificacion = None
 
     def cargar(self):
         """Lee el archivo y devuelve la lista de `FilaCruda`."""
@@ -78,7 +77,6 @@ class FuenteDatos(ABC):
             raise ErrorEntrada(f"El archivo '{self.ruta}' está vacío.")  # R04
         # R06: 'utf-8-sig' descarta el BOM que agrega Excel al principio.
         try:
-            self.codificacion = "utf-8"
             return datos.decode("utf-8-sig")
         except UnicodeDecodeError:
             pass
@@ -89,7 +87,6 @@ class FuenteDatos(ABC):
             raise ErrorEntrada(
                 f"No se pudo leer '{self.ruta}': no está en UTF-8 ni en Windows-1252. "
                 "Volvé a exportarlo como 'CSV UTF-8'.")
-        self.codificacion = "cp1252"
         self.avisos.append("El archivo no está en UTF-8; se leyó como Windows-1252 (cp1252).")
         return texto
 

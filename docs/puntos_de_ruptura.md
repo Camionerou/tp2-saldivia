@@ -49,11 +49,6 @@ haría desaparecer una devolución real del reclamo por un dato que no se usa.
 Una excepción de Python sin capturar (*traceback*) **se considera un bug**, nunca un
 comportamiento esperado: todo error previsible tiene su mensaje.
 
-Además de la validación, la clase `Devolucion` se niega a construirse con valores
-imposibles (cantidad menor que 1 o booleana, estado desconocido, proveedor vacío). Es
-una segunda barrera: si algún día alguien crea devoluciones sin pasar por la
-validación, el error salta en el momento y no en el ranking.
-
 ### Registro de limpieza
 
 `outputs/registro_limpieza.csv` tiene una fila por cada evento:
