@@ -134,14 +134,6 @@ class TestFilaCompleta(unittest.TestCase):
         self.assertEqual((registro.eventos[0].accion, registro.eventos[0].valor_original),
                          ("corregida", "Proveedor 01 "))
 
-    def test_la_clase_devolucion_no_admite_valores_imposibles(self):
-        base = dict(remito="0002-00000001", fecha=date(2026, 3, 10), proveedor="P",
-                    articulo="", cantidad=1, motivo="", estado="abierta", descuenta_stock=None)
-        for cambio in ({"cantidad": 0}, {"cantidad": True}, {"estado": "anulada"}, {"proveedor": ""}):
-            with self.subTest(cambio=cambio):
-                with self.assertRaises(ValueError):
-                    Devolucion(**{**base, **cambio})
-
 
 if __name__ == "__main__":
     unittest.main()

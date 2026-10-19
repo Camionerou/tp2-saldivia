@@ -196,8 +196,7 @@ Los números marcan la etapa del flujo `leer → validar → limpiar → analiza
   vacío) está una sola vez en la clase base; cada subclase solo implementa
   `_interpretar()`. El resto de la aplicación usa `cargar()` sin saber de qué formato
   viene, y por eso el mismo extracto da exactamente el mismo resultado en los dos.
-- **`Devolucion`** es inmutable (`frozen=True`) y se niega a existir con valores
-  imposibles: es una segunda barrera detrás de la validación. Sus métodos
+- **`Devolucion`** es un renglón ya validado e inmutable (`frozen=True`). Sus métodos
   (`esta_abierta`, `dias_abierta`, `clave`) son las preguntas que el análisis le hace.
 - **`ResumenProveedor`** acumula las abiertas de un proveedor y define el orden del
   ranking en un solo lugar. **`RegistroLimpieza`** junta todo lo que hace la limpieza,

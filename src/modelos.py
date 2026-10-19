@@ -24,16 +24,6 @@ class Devolucion:
     descuenta_stock: bool   # o None si no se cargó
     numero_fila: int = 0
 
-    def __post_init__(self):
-        # Última barrera: aunque alguien construya una Devolucion sin pasar por la
-        # validación, no puede existir una con valores imposibles.
-        if isinstance(self.cantidad, bool) or not isinstance(self.cantidad, int) or self.cantidad < 1:
-            raise ValueError(f"cantidad inválida: {self.cantidad}")
-        if self.estado not in ESTADOS:
-            raise ValueError(f"estado inválido: {self.estado}")
-        if not self.proveedor:
-            raise ValueError("el proveedor no puede estar vacío")
-
     def esta_abierta(self):
         return self.estado == "abierta"
 
