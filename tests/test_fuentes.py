@@ -16,7 +16,7 @@ ABORTOS = [
     ("R04", "solo_encabezado.csv", ENCABEZADO + "\n", "no tiene devoluciones"),
     ("R04", "vacio.json", "", "vacío"),
     ("R04", "lista_vacia.json", "[]", "no tiene devoluciones"),
-    ("R05", "ilegible.csv", b"remito\x81\n", "ni en Windows-1252"),  # 0x81 no existe en cp1252
+    ("R05", "windows.csv", "articulo\nFusible térmico\n".encode("cp1252"), "no está en UTF-8"),
     ("R08", "roto.json", '[{"remito": "0002-00000001",}]', r"mal formado \(línea 1, columna \d+\)"),
     ("R09", "raiz_objeto.json", json.dumps({"devoluciones": [renglon()]}), "debe ser una lista"),
     ("R10", "faltan.csv", "remito,fecha,cantidad\n0002-00000001,2026-03-10,5\n",
@@ -65,12 +65,6 @@ class TestArchivo(TestConArchivos):
                 with self.assertRaisesRegex(ErrorEntrada, r"no está soportado.*\.csv o \.json"):
                     fuente_para(nombre)
         self.assertIsInstance(fuente_para("DEVOLUCIONES.CSV"), FuenteCSV)
-
-    def test_R05_codificacion_windows_1252(self):
-        ruta = self.csv(FILA_OK.replace("Llave de luces", "Fusible térmico"), codificacion="cp1252")
-        fuente = fuente_para(ruta)
-        self.assertEqual(fuente.cargar()[0].valores["articulo"], "Fusible térmico")
-        self.assertTrue(any("Windows-1252" in a for a in fuente.avisos))
 
     def test_R06_bom_de_excel(self):
         filas = fuente_para(self.csv(FILA_OK, codificacion="utf-8-sig")).cargar()

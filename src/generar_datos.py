@@ -108,7 +108,7 @@ def inyectar_errores(filas):
     filas[25]["remito"] = "0002-1127"                    # R11
     filas[31]["cantidad"] = "dos"                        # R16
     filas[36]["cantidad"] = 0                            # R17
-    filas[44]["cantidad"] = "1.000"                      # R19
+    filas[44]["cantidad"] = "1.000"                      # R18
     filas[47]["estado"] = "anulada"                      # R22
     filas[55]["proveedor"] = ""                          # R23
 

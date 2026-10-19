@@ -206,8 +206,6 @@ Los números marcan la etapa del flujo `leer → validar → limpiar → analiza
   - `(\d{4})-(\d{2})-(\d{2})` y `(\d{2})/(\d{2})/(\d{4})` reconocen las fechas en
     formato ISO y argentino. Como una regex no puede saber si el 30 de febrero existe,
     sus grupos se pasan a `datetime.date()`, que sí lo comprueba.
-  - `\d{1,3}(\.\d{3})+` detecta cantidades con separador de miles (`1.000`), que se
-    rechazan por ambiguas.
 
   Todas se aplican con `fullmatch`, para que validen el valor completo y no solo una parte.
 
@@ -218,7 +216,7 @@ una fila no sirve, se rechaza y se registra; si un valor se puede corregir sin a
 se corrige y se registra.**
 
 - **Se rechaza la fila:** fecha inexistente (`2026-02-30`), cantidad `"dos"`, `0` o
-  `"1.000"` (ambigua), estado desconocido, proveedor vacío, remito mal formado.
+  `"1.000"` (¿mil o uno?), estado desconocido, proveedor vacío, remito mal formado.
 - **Se corrige:** estado `" Abierta "`, fecha `07/03/2026`, espacios de más.
 - **Se conserva con aviso:** motivo, artículo o dato de stock vacíos; no intervienen en la pregunta.
 - **Duplicados:** de un renglón idéntico se conserva el primero. El mismo número de
@@ -226,7 +224,7 @@ se corrige y se registra.**
   numeración se reutiliza.
 - **Más del 50 % rechazado:** se detiene, porque el problema es el archivo.
 
-Los 47 puntos de ruptura, con su justificación y su test, están en
+Los 45 puntos de ruptura, con su justificación y su test, están en
 [`docs/puntos_de_ruptura.md`](docs/puntos_de_ruptura.md).
 
 ## Interpretación y limitaciones
@@ -240,6 +238,6 @@ Los 47 puntos de ruptura, con su justificación y su test, están en
   devoluciones caras puede quedar abajo. El extracto no tiene montos.
 - "Abierta" significa abierta en el sistema. Si alguien resolvió una devolución pero no
   la cerró, la aplicación no puede saberlo.
-- Los nombres de proveedor que solo difieren en mayúsculas no se unifican (se avisa),
+- Los nombres de proveedor que solo difieren en mayúsculas no se unifican,
   porque decidir si son la misma empresa le corresponde a Compras.
 - Las fechas con barra se interpretan siempre como día/mes/año.
