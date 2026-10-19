@@ -78,17 +78,10 @@ class FuenteDatos(ABC):
         # R06: 'utf-8-sig' descarta el BOM que agrega Excel al principio.
         try:
             return datos.decode("utf-8-sig")
-        except UnicodeDecodeError:
-            pass
-        # R05: Excel en Windows guarda en cp1252.
-        try:
-            texto = datos.decode("cp1252")
-        except UnicodeDecodeError:
+        except UnicodeDecodeError:  # R05
             raise ErrorEntrada(
-                f"No se pudo leer '{self.ruta}': no está en UTF-8 ni en Windows-1252. "
+                f"No se pudo leer '{self.ruta}': no está en UTF-8. "
                 "Volvé a exportarlo como 'CSV UTF-8'.")
-        self.avisos.append("El archivo no está en UTF-8; se leyó como Windows-1252 (cp1252).")
-        return texto
 
     def _verificar_columnas(self, columnas):
         faltantes = [c for c in COLUMNAS_OBLIGATORIAS if c not in columnas]
