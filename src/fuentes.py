@@ -36,7 +36,7 @@ class FilaCruda:
     """
     numero_fila: int
     valores: dict
-    problema: str = None
+    problema: str | None = None
 
 
 def normalizar_columna(nombre):
@@ -52,7 +52,6 @@ class FuenteDatos(ABC):
         self.avisos = []          # mensajes generales sobre el archivo
 
     def cargar(self):
-        """Lee el archivo y devuelve la lista de `FilaCruda`."""
         self._verificar_archivo()
         texto = self._leer_texto()
         columnas, filas = self._interpretar(texto)
@@ -164,7 +163,6 @@ class FuenteJSON(FuenteDatos):
 
 
 def fuente_para(ruta):
-    """Elige la implementación de `FuenteDatos` según la extensión."""
     ruta = Path(ruta)
     extension = ruta.suffix.lower()
     if extension == ".csv":

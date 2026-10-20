@@ -5,6 +5,7 @@ Los comentarios `# Rxx` remiten a docs/puntos_de_ruptura.md.
 """
 import csv
 from dataclasses import dataclass
+from datetime import date
 from pathlib import Path
 
 from fuentes import ErrorEntrada, fuente_para
@@ -26,12 +27,11 @@ class Resultado:
     validas: list
     ranking: list
     registro: RegistroLimpieza
-    corte: object
+    corte: date | None
     avisos: list
 
 
 def validar_filas(filas, registro):
-    """Valida cada fila cruda; las que no sirven quedan en el registro."""
     validas = []
     for fila in filas:
         devolucion = validar_fila(fila, registro)
@@ -106,7 +106,6 @@ def armar_ranking(devoluciones, corte):
 
 
 def procesar(ruta, corte=None):
-    """Ejecuta el flujo completo sobre un archivo y devuelve el `Resultado`."""
     fuente = fuente_para(ruta)
     filas = fuente.cargar()
     registro = RegistroLimpieza()
@@ -121,12 +120,17 @@ def procesar(ruta, corte=None):
         corte = corte or max(d.fecha for d in validas)
         validas = filtrar_por_corte(validas, corte, registro)
 
+    # P01: toda fila leída termina válida o anotada en el registro. Si no, es un bug.
+    descartadas = registro.contar("rechazada") + registro.contar("duplicada")
+    if len(validas) + descartadas != len(filas):
+        raise RuntimeError(f"La limpieza perdió filas: {len(validas)} válidas + {descartadas} "
+                           f"descartadas no suman las {len(filas)} leídas.")
+
     return Resultado(len(filas), validas, armar_ranking(validas, corte),
                      registro, corte, fuente.avisos)
 
 
 def escribir_csv(ruta, encabezado, filas):
-    """Escribe un CSV pensado para abrir en Excel."""
     try:
         ruta.parent.mkdir(parents=True, exist_ok=True)  # R37
         # R39: utf-8-sig para que Excel muestre bien los acentos.
@@ -143,22 +147,18 @@ def guardar_salidas(resultado, carpeta):
     """Guarda el registro siempre y el ranking solo si el resultado es confiable.
 
     El registro va primero: si se rechazaron demasiadas filas (R34), es lo que
-    sirve para diagnosticar. En ese caso se borra el ranking de una corrida
-    anterior, para que no quede uno viejo al lado de un registro nuevo.
+    sirve para diagnosticar. El ranking de una corrida anterior se borra antes de
+    verificar el umbral, para que no quede uno viejo al lado de un registro nuevo.
     """
     carpeta = Path(carpeta)
     escribir_csv(carpeta / "registro_limpieza.csv", RegistroLimpieza.COLUMNAS,
                  resultado.registro.como_filas())
     ruta_ranking = carpeta / "ranking.csv"
     try:
-        verificar_umbral(resultado)
-    except ErrorEntrada as error:
-        try:
-            ruta_ranking.unlink(missing_ok=True)
-        except OSError:  # R38
-            raise ErrorSalida(f"{error} Además, no se pudo borrar el ranking anterior "
-                              f"'{ruta_ranking}': ¿está abierto en Excel?")
-        raise error
+        ruta_ranking.unlink(missing_ok=True)
+    except OSError:  # R38
+        raise ErrorSalida(f"No se pudo reemplazar '{ruta_ranking}': ¿está abierto en Excel?")
+    verificar_umbral(resultado)
     filas = []
     for posicion, r in enumerate(resultado.ranking, start=1):
         filas.append([posicion, r.proveedor, r.renglones, r.unidades,

@@ -17,10 +17,10 @@ import random
 from datetime import date, timedelta
 from pathlib import Path
 
+from fuentes import COLUMNAS_OBLIGATORIAS as COLUMNAS
+
 SEMILLA = 20261013
 RAIZ = Path(__file__).resolve().parents[1]
-COLUMNAS = ["remito", "fecha", "proveedor", "articulo", "cantidad", "motivo",
-            "estado", "descuenta_stock"]
 
 # Artículo devuelto y el motivo que suele anotar Calidad.
 ARTICULOS = [
