@@ -21,7 +21,7 @@ class Devolucion:
     cantidad: int
     motivo: str
     estado: str
-    descuenta_stock: bool   # o None si no se cargó
+    descuenta_stock: bool | None
     numero_fila: int = 0
 
     def esta_abierta(self):
@@ -45,7 +45,7 @@ class ResumenProveedor:
     proveedor: str
     renglones: int = 0
     unidades: int = 0
-    fecha_mas_vieja: date = None
+    fecha_mas_vieja: date | None = None
     dias_mas_vieja: int = 0
 
     def agregar(self, devolucion, corte):

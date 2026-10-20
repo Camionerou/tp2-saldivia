@@ -36,7 +36,7 @@ class FilaCruda:
     """
     numero_fila: int
     valores: dict
-    problema: str = None
+    problema: str | None = None
 
 
 def normalizar_columna(nombre):

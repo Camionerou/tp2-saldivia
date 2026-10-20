@@ -68,7 +68,7 @@ Junto con el ranking se guarda `outputs/registro_limpieza.csv`, con cada fila
 rechazada, corregida, duplicada o con aviso, y el motivo.
 
 Ninguna fila desaparece sin explicación: válidas + rechazadas + duplicadas siempre
-da las filas leídas (lo verifica el test P01). Si el ranking no le cierra al usuario,
+da las filas leídas (lo verifica el programa en cada corrida y el test P01). Si el ranking no le cierra al usuario,
 el registro muestra exactamente qué se descartó y por qué.
 
 ## Alcance

@@ -66,6 +66,9 @@ comportamiento esperado: todo error previsible tiene su mensaje.
 
 ## 2. Puntos de ruptura
 
+Faltan R19 y R25 porque se retiraron durante el desarrollo; los demás identificadores
+no se renumeraron para que sigan coincidiendo con el historial de Git.
+
 ### 2.1 Lectura del archivo (`src/fuentes.py`)
 
 | ID | Qué puede romperse | Ejemplo | Respuesta | Por qué |
@@ -154,7 +157,7 @@ Son la red de seguridad contra errores que no anticipamos.
 
 | ID | Propiedad | Por qué importa |
 |---|---|---|
-| P01 | **Conservación de filas:** leídas = válidas + rechazadas + duplicadas, y ninguna fila está a la vez entre las válidas y las rechazadas | Ninguna fila desaparece sin dejar rastro en el registro. |
+| P01 | **Conservación de filas:** leídas = válidas + rechazadas + duplicadas, y ninguna fila está a la vez entre las válidas y las rechazadas | Ninguna fila desaparece sin dejar rastro en el registro. La suma también la verifica `procesar()` en cada corrida. |
 | P02 | **Conservación de unidades y renglones:** lo que suma el ranking es igual a lo que suman las devoluciones válidas abiertas | El agrupamiento no pierde ni inventa unidades. |
 | P03 | **Equivalencia CSV/JSON:** el mismo extracto en los dos formatos produce `ranking.csv` y `registro_limpieza.csv` idénticos byte a byte | Demuestra que `FuenteCSV` y `FuenteJSON` cumplen el mismo contrato. |
 | P04 | **Reproducibilidad:** dos corridas con la misma entrada producen archivos idénticos byte a byte | Es lo que pide el paso 3 de la consigna. |
