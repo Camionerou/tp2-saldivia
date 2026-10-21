@@ -1,4 +1,6 @@
-"""Contrato de la línea de comandos: códigos de salida, mensajes y R33."""
+"""Contrato de la línea de comandos: códigos de salida, mensajes, R33 y el gráfico."""
+import importlib.util
+import os
 import subprocess
 import sys
 import unittest
@@ -8,10 +10,14 @@ from ayuda import DATOS, RAIZ, TestConArchivos, renglon
 MAIN = RAIZ / "src" / "main.py"
 
 
-def ejecutar(*argumentos):
+def ejecutar(*argumentos, entorno=None):
     """Corre la aplicación como lo haría el usuario y devuelve el proceso terminado."""
     return subprocess.run([sys.executable, str(MAIN), *map(str, argumentos)],
-                          capture_output=True, text=True, encoding="utf-8")
+                          capture_output=True, text=True, encoding="utf-8", env=entorno)
+
+
+def hay_matplotlib():
+    return importlib.util.find_spec("matplotlib") is not None
 
 
 class TestLineaDeComandos(TestConArchivos):
@@ -56,6 +62,45 @@ class TestLineaDeComandos(TestConArchivos):
         proceso = ejecutar(self.json([renglon(estado="cerrada")]), "--salida", self.carpeta)
         self.assertEqual(proceso.returncode, 0)
         self.assertIn("No hay devoluciones abiertas al 2026-03-10", proceso.stdout)
+
+    @unittest.skipUnless(hay_matplotlib(), "matplotlib no está instalado")
+    def test_R42_con_matplotlib_guarda_el_grafico(self):
+        proceso = ejecutar(DATOS / "devoluciones.csv", "--grafico", "--salida", self.carpeta)
+        self.assertEqual(proceso.returncode, 0, proceso.stderr)
+        self.assertTrue((self.carpeta / "ranking.png").read_bytes().startswith(b"\x89PNG"))
+        self.assertIn("ranking.png", proceso.stdout)
+
+    def test_R42_sin_matplotlib_falla_sin_dejar_salidas(self):
+        # Un módulo matplotlib falso que no se puede importar simula que no está instalado.
+        self.escribir("matplotlib.py", "raise ImportError('no instalado')")
+        entorno = {**os.environ, "PYTHONPATH": str(self.carpeta)}
+        proceso = ejecutar(DATOS / "devoluciones.csv", "--grafico", "--salida",
+                           self.carpeta / "salida", entorno=entorno)
+        self.assertEqual(proceso.returncode, 1)
+        self.assertIn("hace falta matplotlib", proceso.stderr)
+        self.assertNotIn("Traceback", proceso.stderr)
+        self.assertFalse((self.carpeta / "salida").exists())
+        # Sin --grafico la aplicación no necesita matplotlib.
+        proceso = ejecutar(DATOS / "devoluciones.csv", "--salida", self.carpeta / "salida",
+                           entorno=entorno)
+        self.assertEqual(proceso.returncode, 0, proceso.stderr)
+
+    @unittest.skipUnless(hay_matplotlib(), "matplotlib no está instalado")
+    def test_R44_el_grafico_muestra_solo_los_primeros_20(self):
+        datos = [renglon(remito=f"0002-{i:08d}", proveedor=f"Proveedor {i:02d}")
+                 for i in range(1, 26)]
+        proceso = ejecutar(self.json(datos), "--grafico", "--salida", self.carpeta)
+        self.assertEqual(proceso.returncode, 0, proceso.stderr)
+        self.assertIn("El gráfico muestra los 20 primeros de 25 proveedores", proceso.stdout)
+        self.assertIn(" 25  Proveedor 25", proceso.stdout)  # la tabla sigue completa
+
+    def test_R43_sin_abiertas_no_hay_grafico_y_se_borra_el_viejo(self):
+        self.escribir("ranking.png", b"de una corrida anterior")
+        proceso = ejecutar(self.json([renglon(estado="cerrada")]), "--grafico",
+                           "--salida", self.carpeta)
+        self.assertEqual(proceso.returncode, 0, proceso.stderr)
+        self.assertIn("No se generó el gráfico", proceso.stdout)
+        self.assertFalse((self.carpeta / "ranking.png").exists())
 
 
 if __name__ == "__main__":

@@ -48,7 +48,7 @@ material que la fábrica ya pagó o va a pagar y no recibió en condiciones.
  4. ANALIZAR ──────── agrupar por proveedor   ──► ranking ordenado  (pipeline.py, modelos.py)
         │
         ▼
- 5. COMUNICAR ─────── pantalla + 2 archivos CSV                     (main.py, pipeline.py)
+ 5. COMUNICAR ─────── pantalla + 2 archivos CSV + gráfico opcional  (main.py, pipeline.py, grafico.py)
 ```
 
 ## Resultado y cómo leerlo
@@ -70,6 +70,13 @@ espera hace más tiempo. Se muestra en pantalla y se guarda en `outputs/ranking.
 Junto con el ranking se guarda `outputs/registro_limpieza.csv`, con cada fila
 rechazada, corregida, duplicada o con aviso, y el motivo.
 
+Con `--grafico` se guarda además `outputs/ranking.png`: una barra por proveedor, en el
+mismo orden del ranking, partida en los cuatro tramos de antigüedad. Cuanto más oscuro
+el tramo, más vieja la devolución; una barra con mucho azul oscuro es un reclamo urgente.
+Si hay más de 20 proveedores, grafica los 20 primeros y lo avisa.
+
+![Gráfico del ranking](docs/ranking.png)
+
 Ninguna fila desaparece sin explicación: válidas + rechazadas + duplicadas siempre
 da las filas leídas (lo verifica el programa en cada corrida y el test P01). Si el ranking no le cierra al usuario,
 el registro muestra exactamente qué se descartó y por qué.
@@ -77,8 +84,8 @@ el registro muestra exactamente qué se descartó y por qué.
 ## Alcance
 
 **Incluye:** lectura de un extracto en CSV o JSON, validación del esquema y de cada
-campo, limpieza con registro, ranking por proveedor a una fecha de corte y pruebas
-automáticas.
+campo, limpieza con registro, ranking por proveedor a una fecha de corte con tramos de
+antigüedad y porcentaje resuelto, un gráfico opcional y pruebas automáticas.
 
 **Queda fuera:** conexión con el sistema real de la empresa, montos, notas de crédito,
 pagos, alertas automáticas e interfaz gráfica.
@@ -101,10 +108,12 @@ Procedencia, variables, errores incluidos y limitaciones en [`data/README.md`](d
 
 ## Instalación
 
-Requiere **Python 3.10 o superior** y nada más: no usa bibliotecas externas.
+Requiere **Python 3.10 o superior**. La aplicación usa solo la biblioteca estándar;
+matplotlib hace falta únicamente para el gráfico (`--grafico`).
 
 ```bash
 git clone https://github.com/Camionerou/tp2-saldivia.git && cd tp2-saldivia
+pip install -r requirements.txt   # solo para --grafico
 ```
 
 ## Uso
@@ -116,6 +125,7 @@ python3 src/main.py data/devoluciones.csv
 python3 src/main.py data/devoluciones.json                    # mismo resultado
 python3 src/main.py data/devoluciones.csv --corte 2026-06-30  # otra fecha de corte
 python3 src/main.py data/devoluciones.csv --salida otra_carpeta
+python3 src/main.py data/devoluciones.csv --grafico          # guarda también ranking.png
 python3 src/generar_datos.py                                  # regenera los datos (idénticos)
 ```
 
@@ -175,7 +185,7 @@ fila,remito,accion,campo,valor_original,motivo
 ```
 tp2-saldivia/
 ├── README.md
-├── requirements.txt          sin dependencias externas
+├── requirements.txt          matplotlib, solo para --grafico
 ├── .gitignore
 ├── src/
 │   ├── fuentes.py            1. leer: FuenteDatos (abstracta), FuenteCSV y FuenteJSON
@@ -183,11 +193,13 @@ tp2-saldivia/
 │   ├── pipeline.py           3-4. duplicados, fecha de corte, umbral, ranking y salidas
 │   ├── modelos.py            Devolucion, ResumenProveedor y RegistroLimpieza
 │   ├── main.py               5. comunicar: línea de comandos, pantalla, códigos de salida
+│   ├── grafico.py            5. comunicar: ranking.png (opcional)
 │   └── generar_datos.py      genera el extracto simulado
 ├── tests/                    pruebas con unittest
 ├── data/                     extracto en CSV y JSON, y su README
 ├── docs/
-│   └── puntos_de_ruptura.md  qué puede fallar, cómo se defiende y con qué test
+│   ├── puntos_de_ruptura.md  qué puede fallar, cómo se defiende y con qué test
+│   └── ranking.png           el gráfico del ejemplo, para mostrarlo en este README
 └── outputs/                  se genera al ejecutar; no se versiona
 ```
 
@@ -205,6 +217,10 @@ Los números marcan la etapa del flujo `leer → validar → limpiar → analiza
 - **`ResumenProveedor`** acumula las abiertas de un proveedor (con sus tramos de
   antigüedad), cuenta sus cerradas y define el orden del ranking en un solo lugar. **`RegistroLimpieza`** junta todo lo que hace la limpieza,
   para que ninguna fila desaparezca sin rastro.
+- **El gráfico es opcional y está aislado en `grafico.py`.** Es lo único que usa una
+  biblioteca externa, y `main.py` lo importa solo si se pide `--grafico`: sin
+  matplotlib, el ranking y el registro funcionan igual. Los tramos usan un solo color de
+  claro a oscuro porque son un orden (más o menos viejo), no categorías sin relación.
 - **Expresiones regulares** (`src/validacion.py`):
   - `\d{4}-\d{8}` valida el número de remito (punto de venta y número).
   - `(\d{4})-(\d{2})-(\d{2})` y `(\d{2})/(\d{2})/(\d{4})` reconocen las fechas en
@@ -228,7 +244,7 @@ se corrige y se registra.**
   numeración se reutiliza.
 - **Más del 50 % rechazado:** se detiene, porque el problema es el archivo.
 
-Los 47 puntos de ruptura, con su justificación y su test, están en
+Los 50 puntos de ruptura, con su justificación y su test, están en
 [`docs/puntos_de_ruptura.md`](docs/puntos_de_ruptura.md).
 
 ## Interpretación y limitaciones

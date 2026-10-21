@@ -36,10 +36,13 @@ def leer_argumentos(argv):
                         help="fecha de corte AAAA-MM-DD (por defecto, la más reciente del extracto)")
     parser.add_argument("--salida", default=str(RAIZ / "outputs"),
                         help="carpeta donde se guardan los resultados (por defecto, outputs/)")
+    parser.add_argument("--grafico", action="store_true",
+                        help="guarda además ranking.png (requiere matplotlib)")
     return parser.parse_args(argv)
 
 
-def mostrar(resultado, carpeta):
+def mostrar(resultado, carpeta, graficados):
+    """`graficados`: proveedores en ranking.png, o None si no se pidió --grafico."""
     registro = resultado.registro
     for aviso in resultado.avisos:
         print(f"Aviso: {aviso}")
@@ -62,19 +65,34 @@ def mostrar(resultado, carpeta):
                   f"{r.porcentaje_resuelto():>9} %")
     if carpeta.is_relative_to(Path.cwd()):
         carpeta = carpeta.relative_to(Path.cwd())
-    print(f"\nResultados guardados en {carpeta}/ranking.csv y {carpeta}/registro_limpieza.csv")
+    archivos = [f"{carpeta}/ranking.csv", f"{carpeta}/registro_limpieza.csv"]
+    if graficados:
+        archivos.append(f"{carpeta}/ranking.png")
+        if graficados < len(resultado.ranking):  # R44
+            print(f"\nEl gráfico muestra los {graficados} primeros de {len(resultado.ranking)} "
+                  "proveedores; el ranking completo está en ranking.csv.")
+    elif graficados == 0:  # R43
+        print("No se generó el gráfico porque no hay devoluciones abiertas.")
+    print(f"\nResultados guardados en {', '.join(archivos[:-1])} y {archivos[-1]}")
 
 
 def main(argv=None):
     argumentos = leer_argumentos(argv)
     carpeta = Path(argumentos.salida)
+    graficados = None
     try:
+        if argumentos.grafico:
+            # R42: se importa antes de procesar, para que sin matplotlib la corrida
+            # falle sin dejar salidas a medias.
+            from grafico import graficar_ranking
         resultado = procesar(argumentos.archivo, argumentos.corte)
         guardar_salidas(resultado, carpeta)
+        if argumentos.grafico:
+            graficados = graficar_ranking(resultado, carpeta / "ranking.png")
     except (ErrorEntrada, ErrorSalida) as error:
         print(f"Error: {error}", file=sys.stderr)
         return 1
-    mostrar(resultado, carpeta)
+    mostrar(resultado, carpeta, graficados)
     return 0
 
 

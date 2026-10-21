@@ -41,7 +41,7 @@ haría desaparecer una devolución real del reclamo por un dato que no se usa.
 
 | Situación | Código de salida | Salidas |
 |---|---|---|
-| Corrida correcta (aunque haya filas rechazadas) | `0` | `outputs/ranking.csv`, `outputs/registro_limpieza.csv` y el ranking en pantalla |
+| Corrida correcta (aunque haya filas rechazadas) | `0` | `outputs/ranking.csv`, `outputs/registro_limpieza.csv` y el ranking en pantalla; con `--grafico`, también `outputs/ranking.png` |
 | Error en la entrada (archivo o esquema) o al escribir las salidas | `1` | Ninguna; mensaje por `stderr` |
 | Demasiadas filas rechazadas (R34) | `1` | Solo `registro_limpieza.csv`, para poder diagnosticar |
 | Error de uso (argumentos de la línea de comandos) | `2` | Ninguna; mensaje de uso |
@@ -147,6 +147,9 @@ Columnas obligatorias: `remito`, `fecha`, `proveedor`, `articulo`, `cantidad`, `
 | R37 | No existe la carpeta de salida | Repositorio recién clonado (`outputs/` está en `.gitignore`) | Se crea, con las carpetas intermedias | `outputs/` no se versiona, así que en un clon nuevo nunca existe. |
 | R38 | No se puede escribir la salida | `ranking.csv` abierto en Excel (en Windows queda bloqueado) o carpeta sin permisos | ABORTAR: `No se pudo escribir ... ¿Está abierto en Excel o la carpeta no tiene permisos?` | Un `PermissionError` con traceback no le dice al usuario qué hacer. |
 | R39 | Acentos rotos al abrir el CSV de salida en Excel | `Válvula` se ve como `VÃ¡lvula` | Se escribe en `utf-8-sig` (UTF-8 con BOM) | Excel solo reconoce UTF-8 si el archivo trae BOM, y el usuario final abre esto en Excel. |
+| R42 | Se pide `--grafico` y matplotlib no está instalado | Un clon nuevo sin `pip install` | ABORTAR antes de procesar, con un mensaje que dice cómo instalarlo. Sin `--grafico`, matplotlib no se importa nunca | El gráfico es lo único que usa una biblioteca externa: el ranking y el registro no pueden depender de ella. Se verifica antes de leer el archivo para que la corrida no falle a mitad de camino dejando salidas incompletas. |
+| R43 | Se pide `--grafico` y no hay devoluciones abiertas | Todas cerradas | No se genera el gráfico y se avisa en pantalla; el código sigue siendo `0`. Un `ranking.png` de una corrida anterior se borra, igual que el `ranking.csv` (R34) | Un gráfico vacío no dice nada, y uno viejo al lado de un ranking nuevo diría algo falso. |
+| R44 | Demasiados proveedores para un gráfico legible | 40 proveedores: desde el puesto 20 las barras son astillas | El gráfico muestra los 20 primeros del ranking y lo dice en el título y en pantalla. La tabla y `ranking.csv` siguen completos | El gráfico responde a quién reclamarle primero; los últimos puestos no cambian esa respuesta y achican todo lo demás. Avisarlo evita que alguien crea que el gráfico es el ranking entero. |
 
 ---
 
@@ -172,7 +175,7 @@ Son la red de seguridad contra errores que no anticipamos.
 
 ## 4. Cómo se prueba
 
-- Framework: `unittest`, de la biblioteca estándar (el proyecto no tiene dependencias externas).
+- Framework: `unittest`, de la biblioteca estándar (matplotlib solo hace falta para el gráfico; sin él, el test que lo genera se saltea).
 - Comando, desde la raíz del proyecto: `python3 -m unittest discover -s tests -v`
 - Cada punto se prueba con un test llamado `test_<ID>_<descripcion>` o con una fila de
   una **tabla de casos**, cuyo primer valor es el ID. Las tablas (`RECHAZOS`,

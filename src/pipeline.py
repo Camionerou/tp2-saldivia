@@ -153,17 +153,18 @@ def guardar_salidas(resultado, carpeta):
     """Guarda el registro siempre y el ranking solo si el resultado es confiable.
 
     El registro va primero: si se rechazaron demasiadas filas (R34), es lo que
-    sirve para diagnosticar. El ranking de una corrida anterior se borra antes de
-    verificar el umbral, para que no quede uno viejo al lado de un registro nuevo.
+    sirve para diagnosticar. El ranking y su gráfico de una corrida anterior se borran
+    antes de verificar el umbral, para que no queden viejos al lado de un registro nuevo.
     """
     carpeta = Path(carpeta)
     escribir_csv(carpeta / "registro_limpieza.csv", RegistroLimpieza.COLUMNAS,
                  resultado.registro.como_filas())
     ruta_ranking = carpeta / "ranking.csv"
-    try:
-        ruta_ranking.unlink(missing_ok=True)
-    except OSError:  # R38
-        raise ErrorSalida(f"No se pudo reemplazar '{ruta_ranking}': ¿está abierto en Excel?")
+    for anterior in (ruta_ranking, carpeta / "ranking.png"):
+        try:
+            anterior.unlink(missing_ok=True)
+        except OSError:  # R38
+            raise ErrorSalida(f"No se pudo reemplazar '{anterior}': ¿está abierto en otro programa?")
     verificar_umbral(resultado)
     filas = []
     for posicion, r in enumerate(resultado.ranking, start=1):
