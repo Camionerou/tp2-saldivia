@@ -14,7 +14,9 @@ from validacion import validar_fila
 
 UMBRAL_RECHAZO = 0.5
 COLUMNAS_RANKING = ("posicion", "proveedor", "renglones_abiertos", "unidades",
-                    "devolucion_mas_vieja", "dias_abierta")
+                    "devolucion_mas_vieja", "dias_abierta",
+                    "hasta_30_dias", "31_a_90_dias", "91_a_180_dias", "mas_de_180_dias",
+                    "cerradas", "porcentaje_resuelto")
 
 
 class ErrorSalida(Exception):
@@ -96,13 +98,17 @@ def verificar_umbral(resultado, umbral=UMBRAL_RECHAZO):
 
 
 def armar_ranking(devoluciones, corte):
-    """Agrupa las devoluciones abiertas por proveedor y las ordena (R36)."""
+    """Agrupa las devoluciones por proveedor y ordena los que tienen abiertas (R36).
+
+    Las cerradas también se agrupan para calcular el porcentaje resuelto (R41), pero
+    un proveedor sin abiertas no tiene nada que reclamarle y queda afuera.
+    """
     resumenes = {}
     for d in devoluciones:
-        if d.esta_abierta():
-            resumen = resumenes.setdefault(d.proveedor, ResumenProveedor(d.proveedor))
-            resumen.agregar(d, corte)
-    return sorted(resumenes.values(), key=ResumenProveedor.orden)
+        resumen = resumenes.setdefault(d.proveedor, ResumenProveedor(d.proveedor))
+        resumen.agregar(d, corte)
+    con_abiertas = [r for r in resumenes.values() if r.renglones]
+    return sorted(con_abiertas, key=ResumenProveedor.orden)
 
 
 def procesar(ruta, corte=None):
@@ -162,5 +168,6 @@ def guardar_salidas(resultado, carpeta):
     filas = []
     for posicion, r in enumerate(resultado.ranking, start=1):
         filas.append([posicion, r.proveedor, r.renglones, r.unidades,
-                      r.fecha_mas_vieja.isoformat(), r.dias_mas_vieja])
+                      r.fecha_mas_vieja.isoformat(), r.dias_mas_vieja, *r.por_tramo,
+                      r.cerradas, r.porcentaje_resuelto()])
     escribir_csv(ruta_ranking, COLUMNAS_RANKING, filas)

@@ -137,6 +137,8 @@ Columnas obligatorias: `remito`, `fecha`, `proveedor`, `articulo`, `cantidad`, `
 | R34 | Demasiadas filas rechazadas | Se rechaza más del 50 % del archivo | ABORTAR con el motivo de rechazo más frecuente. Se guarda solo el registro, y si había un `ranking.csv` de una corrida anterior se borra | Pasado ese punto el problema es el archivo (o la fecha de corte), no unas filas sueltas, y un ranking armado con lo que quedó sería engañoso. Un ranking viejo al lado de un registro nuevo también lo sería. Con exactamente el 50 % todavía se procesa. |
 | R35 | No hay devoluciones abiertas | Todas cerradas | Código `0`, mensaje `No hay devoluciones abiertas al <corte>.` y `ranking.csv` con solo el encabezado | Es una respuesta válida (no hay a quién reclamarle), no un error. Distinto de R04. |
 | R36 | Empates en el ranking | Dos proveedores con la misma cantidad de renglones | Orden total: renglones abiertos ↓, días de la más vieja ↓, unidades ↓, nombre ↑ | Sin desempate total el orden podría variar y el ranking no sería reproducible. Desempatar primero por antigüedad prioriza al que hace más que espera. |
+| R40 | La devolución más vieja esconde cómo se reparte el resto | Un proveedor con 17 abiertas y la más vieja de enero: ¿son 17 viejas o 16 de la semana pasada? | Cada proveedor cuenta sus renglones abiertos en cuatro tramos de antigüedad: `0-30`, `31-90`, `91-180` y `+180` días. Cada límite pertenece al tramo de abajo (30 días cae en `0-30`; 31, en `31-90`) | Es el formato con que Compras y Administración miran deudas pendientes. Sin límites explícitos, un renglón de exactamente 30 días podría contarse en dos tramos o en ninguno. |
+| R41 | Muchas abiertas no distinguen al que no resuelve del que tiene mucho volumen | Dos proveedores con 6 abiertas: uno cerró 3, el otro ninguna | Se informan las cerradas y el porcentaje resuelto: cerradas / (abiertas + cerradas), redondeado a entero. Un proveedor que tiene solo cerradas no entra al ranking | Para Administración no es lo mismo frenarle un pago a quien nunca resuelve que a quien resuelve pero recibe muchas devoluciones. El porcentaje no cambia el orden (R36), que sigue respondiendo a quién reclamarle primero. |
 
 ### 2.6 Salidas (`src/pipeline.py`, `src/modelos.py`)
 
@@ -161,8 +163,9 @@ Son la red de seguridad contra errores que no anticipamos.
 | P02 | **Conservación de unidades y renglones:** lo que suma el ranking es igual a lo que suman las devoluciones válidas abiertas | El agrupamiento no pierde ni inventa unidades. |
 | P03 | **Equivalencia CSV/JSON:** el mismo extracto en los dos formatos produce `ranking.csv` y `registro_limpieza.csv` idénticos byte a byte | Demuestra que `FuenteCSV` y `FuenteJSON` cumplen el mismo contrato. |
 | P04 | **Reproducibilidad:** dos corridas con la misma entrada producen archivos idénticos byte a byte | Es lo que pide el paso 3 de la consigna. |
-| P05 | **Rangos válidos:** toda cantidad es ≥ 1, ninguna fecha supera el corte, toda antigüedad es ≥ 0 y todo proveedor del ranking tiene al menos un renglón | Detecta errores de cálculo y de filtrado. |
+| P05 | **Rangos válidos:** toda cantidad es ≥ 1, ninguna fecha supera el corte, toda antigüedad es ≥ 0, todo proveedor del ranking tiene al menos un renglón y su porcentaje resuelto está entre 0 y 99 (si estuviera en 100 no tendría abiertas) | Detecta errores de cálculo y de filtrado. |
 | P06 | **Orden:** el ranking respeta el criterio de R36, sin proveedores repetidos | El primero es efectivamente al que más hay que reclamarle. |
+| P07 | **Tramos completos:** los tramos de antigüedad de cada proveedor suman sus renglones abiertos, y el último tramo con renglones es el de su devolución más vieja | Ningún renglón queda fuera de los tramos ni se cuenta en dos (R40). |
 | T01 | **Trazabilidad:** todo identificador de este documento tiene un test con ese identificador en el nombre, y viceversa | Este documento no puede quedar desactualizado respecto de las pruebas. |
 
 ---

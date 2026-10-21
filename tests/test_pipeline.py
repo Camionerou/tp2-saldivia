@@ -1,12 +1,13 @@
-"""Duplicados, análisis y salidas: puntos R29 a R39, y el caso normal completo."""
+"""Duplicados, análisis y salidas: puntos R29 a R41, y el caso normal completo."""
 import csv
 import os
 import unittest
-from datetime import date
+from datetime import date, timedelta
 
 from ayuda import DATOS, TestConArchivos, renglon
 
 from fuentes import ErrorEntrada
+from modelos import tramo
 from pipeline import ErrorSalida, guardar_salidas, procesar, verificar_umbral
 
 
@@ -130,6 +131,32 @@ class TestAnalisis(TestConArchivos):
         # E: más renglones. B: más antigua. D: más unidades. A antes que C por nombre.
         self.assertEqual(orden, ["Proveedor E", "Proveedor B", "Proveedor D",
                                  "Proveedor A", "Proveedor C"])
+
+    def test_R40_tramos_de_antiguedad_en_los_limites(self):
+        corte = date(2026, 9, 30)
+        # Cada límite cae en el tramo de abajo; un día más pasa al siguiente.
+        casos = {0: 0, 30: 0, 31: 1, 90: 1, 91: 2, 180: 2, 181: 3, 264: 3}
+        datos = [renglon(remito=f"0002-{i:08d}", fecha=(corte - timedelta(days=dias)).isoformat())
+                 for i, dias in enumerate(casos, start=1)]
+        resultado = procesar(self.json(datos), corte=corte)
+        self.assertEqual(resultado.ranking[0].por_tramo, [2, 2, 2, 2])
+        for dias, esperado in casos.items():
+            with self.subTest(dias=dias):
+                self.assertEqual(tramo(dias), esperado)
+
+    def test_R41_porcentaje_resuelto_por_proveedor(self):
+        datos = [
+            renglon(remito="0002-00000001", proveedor="Proveedor A"),
+            renglon(remito="0002-00000002", proveedor="Proveedor A", estado="cerrada"),
+            renglon(remito="0002-00000003", proveedor="Proveedor A", estado="cerrada"),
+            renglon(remito="0002-00000004", proveedor="Proveedor B"),
+            renglon(remito="0002-00000005", proveedor="Proveedor C", estado="cerrada"),
+        ]
+        resultado = procesar(self.json(datos))
+        resueltos = {r.proveedor: (r.renglones, r.cerradas, r.porcentaje_resuelto())
+                     for r in resultado.ranking}
+        # A cerró 2 de 3; B no cerró ninguna; C no tiene abiertas y no entra al ranking.
+        self.assertEqual(resueltos, {"Proveedor A": (1, 2, 67), "Proveedor B": (1, 0, 0)})
 
 
 class TestSalidas(TestConArchivos):

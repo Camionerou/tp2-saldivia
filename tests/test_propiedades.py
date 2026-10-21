@@ -1,4 +1,4 @@
-"""Propiedades que el resultado tiene que cumplir siempre: P01 a P06.
+"""Propiedades que el resultado tiene que cumplir siempre: P01 a P07.
 
 Se comprueban sobre el extracto de data/ en los dos formatos y sobre extractos
 generados al azar (con semilla fija), para no depender de un único ejemplo.
@@ -8,6 +8,7 @@ import unittest
 
 from ayuda import DATOS, TestConArchivos, renglon
 
+from modelos import tramo
 from pipeline import guardar_salidas, procesar
 
 
@@ -86,6 +87,7 @@ class TestPropiedades(TestConArchivos):
                 for p in r.ranking:
                     self.assertGreaterEqual(p.dias_mas_vieja, 0)
                     self.assertGreaterEqual(p.renglones, 1)
+                    self.assertTrue(0 <= p.porcentaje_resuelto() < 100)
 
     def test_P06_ranking_ordenado(self):
         for nombre, r in self.resultados():
@@ -93,6 +95,15 @@ class TestPropiedades(TestConArchivos):
                 claves = [p.orden() for p in r.ranking]
                 self.assertEqual(claves, sorted(claves))
                 self.assertEqual(len({p.proveedor for p in r.ranking}), len(r.ranking))
+
+    def test_P07_los_tramos_suman_los_renglones(self):
+        for nombre, r in self.resultados():
+            with self.subTest(nombre):
+                for p in r.ranking:
+                    self.assertEqual(sum(p.por_tramo), p.renglones)
+                    # La devolución más vieja define el último tramo con renglones.
+                    ultimo = max(i for i, cantidad in enumerate(p.por_tramo) if cantidad)
+                    self.assertEqual(ultimo, tramo(p.dias_mas_vieja))
 
 
 if __name__ == "__main__":

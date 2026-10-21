@@ -13,6 +13,7 @@ from datetime import date
 from pathlib import Path
 
 from fuentes import ErrorEntrada
+from modelos import TRAMOS
 from pipeline import ErrorSalida, guardar_salidas, procesar
 
 RAIZ = Path(__file__).resolve().parents[1]
@@ -50,11 +51,15 @@ def mostrar(resultado, carpeta):
     if not resultado.ranking:  # R35
         print(f"No hay devoluciones abiertas al {resultado.corte}.")
     else:
+        tramos = "".join(f"{nombre:>8}" for _, nombre in TRAMOS)
+        print(f"{'':>67}{'Renglones por antigüedad (días)':>32}")
         print(f"{'#':>3}  {'Proveedor':<22}{'Renglones':>10}{'Unidades':>10}"
-              f"{'Más vieja':>13}{'Días':>7}")
+              f"{'Más vieja':>13}{'Días':>7}{tramos}{'Resuelto':>11}")
         for posicion, r in enumerate(resultado.ranking, start=1):
+            por_tramo = "".join(f"{cantidad or '·':>8}" for cantidad in r.por_tramo)
             print(f"{posicion:>3}  {r.proveedor:<22}{r.renglones:>10}{r.unidades:>10}"
-                  f"{r.fecha_mas_vieja.isoformat():>13}{r.dias_mas_vieja:>7}")
+                  f"{r.fecha_mas_vieja.isoformat():>13}{r.dias_mas_vieja:>7}{por_tramo}"
+                  f"{r.porcentaje_resuelto():>9} %")
     if carpeta.is_relative_to(Path.cwd()):
         carpeta = carpeta.relative_to(Path.cwd())
     print(f"\nResultados guardados en {carpeta}/ranking.csv y {carpeta}/registro_limpieza.csv")

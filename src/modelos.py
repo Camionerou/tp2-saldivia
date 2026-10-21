@@ -1,9 +1,18 @@
 """Clases del dominio: la devolución, el resumen por proveedor y el registro de limpieza."""
 from collections import Counter
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import date
 
 ESTADOS = ("abierta", "cerrada")
+# R40: tramos de antigüedad como (límite superior en días, nombre); el último no tiene límite.
+TRAMOS = ((30, "0-30"), (90, "31-90"), (180, "91-180"), (None, "+180"))
+
+
+def tramo(dias):
+    """Posición en TRAMOS del tramo al que pertenece una antigüedad en días."""
+    for posicion, (limite, _) in enumerate(TRAMOS):
+        if limite is None or dias <= limite:
+            return posicion
 
 
 @dataclass(frozen=True)
@@ -41,19 +50,33 @@ class Devolucion:
 
 @dataclass
 class ResumenProveedor:
-    """Devoluciones abiertas de un proveedor a una fecha de corte."""
+    """Devoluciones abiertas de un proveedor a una fecha de corte.
+
+    Las cerradas solo se cuentan, para saber qué parte de sus devoluciones ya resolvió (R41).
+    """
     proveedor: str
     renglones: int = 0
     unidades: int = 0
     fecha_mas_vieja: date | None = None
     dias_mas_vieja: int = 0
+    por_tramo: list = field(default_factory=lambda: [0] * len(TRAMOS))
+    cerradas: int = 0
 
     def agregar(self, devolucion, corte):
+        if not devolucion.esta_abierta():
+            self.cerradas += 1
+            return
+        dias = devolucion.dias_abierta(corte)
         self.renglones += 1
         self.unidades += devolucion.cantidad
+        self.por_tramo[tramo(dias)] += 1
         if self.fecha_mas_vieja is None or devolucion.fecha < self.fecha_mas_vieja:
             self.fecha_mas_vieja = devolucion.fecha
-            self.dias_mas_vieja = devolucion.dias_abierta(corte)
+            self.dias_mas_vieja = dias
+
+    def porcentaje_resuelto(self):
+        """Porcentaje entero de sus devoluciones que ya están cerradas (R41)."""
+        return round(100 * self.cerradas / (self.renglones + self.cerradas))
 
     def orden(self):
         """Criterio del ranking (R36): más renglones, más antigüedad, más unidades, nombre."""

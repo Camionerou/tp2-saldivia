@@ -61,6 +61,9 @@ Un ranking de proveedores con devoluciones abiertas a una fecha de corte:
 | `unidades` | Cuántas unidades suman esos renglones |
 | `devolucion_mas_vieja` | Fecha de la devolución abierta más antigua |
 | `dias_abierta` | Días entre esa devolución y la fecha de corte |
+| `hasta_30_dias` … `mas_de_180_dias` | Cuántos renglones abiertos hay en cada tramo de antigüedad: 0-30, 31-90, 91-180 y más de 180 días |
+| `cerradas` | Cuántas devoluciones del proveedor ya se cerraron (no cuentan para el orden) |
+| `porcentaje_resuelto` | Cerradas sobre el total de sus devoluciones: distingue al que no resuelve del que recibe muchas |
 
 El primero del ranking es el que tiene más renglones pendientes; si hay empate, el que
 espera hace más tiempo. Se muestra en pantalla y se guarda en `outputs/ranking.csv`.
@@ -135,7 +138,7 @@ python3 -m unittest discover -s tests -v
 |---|---|---|
 | Caso normal, con resultados exactos | `test_pipeline.py`, `test_validacion.py`, `test_main.py` | 83 leídas, 75 válidas, 7 rechazadas; primer puesto del ranking |
 | Entradas inválidas y casos límite | `test_fuentes.py`, `test_validacion.py`, `test_pipeline.py` | archivo inexistente, JSON mal formado, fecha `2026-02-30`, cantidad `"1.000"`, umbral justo en el 50 % |
-| Propiedades del resultado | `test_propiedades.py` | conservación de filas (P01) y unidades (P02), equivalencia CSV/JSON (P03), reproducibilidad (P04), rangos (P05), orden (P06) |
+| Propiedades del resultado | `test_propiedades.py` | conservación de filas (P01) y unidades (P02), equivalencia CSV/JSON (P03), reproducibilidad (P04), rangos (P05), orden (P06), tramos de antigüedad completos (P07) |
 | Trazabilidad | `test_trazabilidad.py` | cada punto de ruptura documentado tiene su test (T01) |
 
 ## Ejemplo de resultado
@@ -145,14 +148,15 @@ $ python3 src/main.py data/devoluciones.csv
 Filas leídas: 83 | válidas: 75 | rechazadas: 7 | duplicadas: 1 | corregidas: 5
 Fecha de corte: 2026-09-30
 
-  #  Proveedor              Renglones  Unidades    Más vieja   Días
-  1  Proveedor 01                  17       179   2026-01-09    264
-  2  Proveedor 02                  10       152   2026-01-07    266
-  3  Proveedor 04                   6        69   2026-01-05    268
-  4  Proveedor 06                   6        65   2026-02-10    232
-  5  Proveedor 09                   4        44   2026-02-15    227
+                                                                    Renglones por antigüedad (días)
+  #  Proveedor              Renglones  Unidades    Más vieja   Días    0-30   31-90  91-180    +180   Resuelto
+  1  Proveedor 01                  17       179   2026-01-09    264       6       2       4       5       19 %
+  2  Proveedor 02                  10       152   2026-01-07    266       2       2       3       3        9 %
+  3  Proveedor 04                   6        69   2026-01-05    268       ·       2       1       3       33 %
+  4  Proveedor 06                   6        65   2026-02-10    232       3       1       ·       2        0 %
+  5  Proveedor 09                   4        44   2026-02-15    227       1       1       1       1        0 %
   ...
- 15  Proveedor 18                   1         8   2026-09-26      4
+ 15  Proveedor 18                   1         8   2026-09-26      4       1       ·       ·       ·       50 %
 
 Resultados guardados en outputs/ranking.csv y outputs/registro_limpieza.csv
 ```
@@ -198,8 +202,8 @@ Los números marcan la etapa del flujo `leer → validar → limpiar → analiza
   viene, y por eso el mismo extracto da exactamente el mismo resultado en los dos.
 - **`Devolucion`** es un renglón ya validado e inmutable (`frozen=True`). Sus métodos
   (`esta_abierta`, `dias_abierta`, `clave`) son las preguntas que el análisis le hace.
-- **`ResumenProveedor`** acumula las abiertas de un proveedor y define el orden del
-  ranking en un solo lugar. **`RegistroLimpieza`** junta todo lo que hace la limpieza,
+- **`ResumenProveedor`** acumula las abiertas de un proveedor (con sus tramos de
+  antigüedad), cuenta sus cerradas y define el orden del ranking en un solo lugar. **`RegistroLimpieza`** junta todo lo que hace la limpieza,
   para que ninguna fila desaparezca sin rastro.
 - **Expresiones regulares** (`src/validacion.py`):
   - `\d{4}-\d{8}` valida el número de remito (punto de venta y número).
@@ -224,7 +228,7 @@ se corrige y se registra.**
   numeración se reutiliza.
 - **Más del 50 % rechazado:** se detiene, porque el problema es el archivo.
 
-Los 45 puntos de ruptura, con su justificación y su test, están en
+Los 47 puntos de ruptura, con su justificación y su test, están en
 [`docs/puntos_de_ruptura.md`](docs/puntos_de_ruptura.md).
 
 ## Interpretación y limitaciones
@@ -232,12 +236,18 @@ Los 45 puntos de ruptura, con su justificación y su test, están en
 - Con el extracto simulado, dos proveedores concentran el 44 % de los renglones
   abiertos (27 de 62) y los tres primeros del ranking tienen devoluciones de enero sin
   resolver: más de 260 días. Esa es la situación que la aplicación busca hacer visible.
+  Los tramos de antigüedad muestran que no son casos aislados: 18 de las 62 abiertas
+  (29 %) llevan más de 180 días, y 5 de ellas son del primer proveedor. El porcentaje
+  resuelto separa casos que el conteo empata: Proveedor 04 y Proveedor 06 tienen 6
+  abiertas cada uno, pero el 04 cerró un tercio de sus devoluciones y el 06 ninguna.
   **Los datos son ficticios**: el resultado muestra que el flujo funciona, no describe
   a proveedores reales.
 - El ranking cuenta renglones y unidades, no dinero: un proveedor con pocas
   devoluciones caras puede quedar abajo. El extracto no tiene montos.
 - "Abierta" significa abierta en el sistema. Si alguien resolvió una devolución pero no
-  la cerró, la aplicación no puede saberlo.
+  la cerró, la aplicación no puede saberlo. Por el mismo motivo, con un `--corte` en el
+  pasado el estado sigue siendo el del extracto: una devolución cerrada después de esa
+  fecha cuenta como cerrada.
 - Los nombres de proveedor que solo difieren en mayúsculas no se unifican,
   porque decidir si son la misma empresa le corresponde a Compras.
 - Las fechas con barra se interpretan siempre como día/mes/año.
